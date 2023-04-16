@@ -79,13 +79,13 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public List<Item> searchAvailableItem(String text) {
-        if (text == null || text.equals("")) {
+        if (text == null || text.isBlank()) {
             return new ArrayList<>();
         }
         List<Item> availableItems = new ArrayList<>();
         for (Item item : items.values()) {
             String itemToString = item.toString().toLowerCase();
-            if (itemToString.contains(text.toLowerCase()) & item.getAvailable()) {
+            if (itemToString.contains(text.toLowerCase()) && item.getAvailable()) {
                 availableItems.add(item);
             }
         }
