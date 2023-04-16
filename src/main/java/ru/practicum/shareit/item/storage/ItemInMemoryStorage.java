@@ -79,7 +79,7 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public List<Item> searchAvailableItem(String text) {
-        if (text == null || text.equals("")) {
+        if (text == null || text.isBlank()) {
             return new ArrayList<>();
         }
         List<Item> availableItems = new ArrayList<>();
