@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class ItemInMemoryStorage implements ItemStorage {
@@ -18,15 +19,6 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public Item create(Item item, User owner) {
-        if (item.getAvailable() == null) {
-            throw new ValidationException("Item is Not Available");
-        }
-        if (item.getDescription() == null) {
-            throw new ValidationException("Description Is Null");
-        }
-        if (item.getName() == null || item.getName().equals("")) {
-            throw new ValidationException("Name is Invalid");
-        }
         idCounter++;
         item.setId(idCounter);
         item.setOwner(owner);
@@ -43,35 +35,19 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public Item getById(long id) {
-        if (items.get(id)==null) {
-            throw new NotFoundException("Item with " + id + " Id is not found");
-        }
         return items.get(id);
     }
 
     @Override
     public List<Item> getAllByOwner(User owner) {
-        ArrayList<Item> ownersItems = new ArrayList<>();
-        for (Item item : items.values()) {
-            if (item.getOwner().equals(owner)) {
-                ownersItems.add(item);
-            }
-        }
-        return ownersItems;
+        return items.values().stream().filter(i -> i.getOwner().equals(owner)).collect(Collectors.toList());
+
     }
 
     @Override
     public List<Item> searchAvailableItem(String text) {
-        if (text == null || text.isBlank()) {
-            return new ArrayList<>();
-        }
-        List<Item> availableItems = new ArrayList<>();
-        for (Item item : items.values()) {
-            String itemToString = item.toString().toLowerCase();
-            if (itemToString.contains(text.toLowerCase()) && item.getAvailable()) {
-                availableItems.add(item);
-            }
-        }
-        return availableItems;
+        return items.values().stream()
+                .filter(item -> item.toString().toLowerCase().contains(text.toLowerCase()) && item.getAvailable())
+                .collect(Collectors.toList());
     }
 }

@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.storage;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserStorage {
     User create(User user);
@@ -11,9 +12,9 @@ public interface UserStorage {
 
     List<User> getAll();
 
-    User update(Long idFromQuery, User user);
+    User update(User user);
 
     void deleteById(Long id);
 
-    boolean isEmailInvalid(Long id, String email);
+    Set<String> getAllEmails();
 }

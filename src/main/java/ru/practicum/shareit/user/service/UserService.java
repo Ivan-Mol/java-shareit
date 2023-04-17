@@ -11,8 +11,9 @@ public interface UserService {
 
     UserDto create(UserDto userDto);
 
-    UserDto update(Long idFromQuery, UserDto userDto);
+    UserDto update(UserDto userDto);
 
     void deleteById(Long id);
 
+    boolean isEmailInvalid(Long id, String email);
 }
