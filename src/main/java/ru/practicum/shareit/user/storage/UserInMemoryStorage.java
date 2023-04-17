@@ -19,6 +19,9 @@ public class UserInMemoryStorage implements UserStorage {
 
     @Override
     public User create(User user) {
+        if (user.getEmail() == null) {
+            throw new EmailIsExistsException("Email is mull");
+        }
         if (isEmailInvalid(user.getId(), user.getEmail())) {
             throw new EmailIsExistsException("Email Is already used");
         }

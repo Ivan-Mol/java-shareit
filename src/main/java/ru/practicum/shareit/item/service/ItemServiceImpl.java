@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -13,8 +12,8 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -25,47 +24,24 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getById(Long id) {
-        if (itemStorage.getById(id)==null) {
-            throw new NotFoundException("Item with " + id + " Id is not found");
-        }
         return ItemMapper.toItemDto(itemStorage.getById(id));
     }
 
     @Override
     public List<ItemDto> getAllByOwner(Long ownerId) {
-        List<ItemDto> itemDto = new ArrayList<>();
         User usr = UserMapper.toUser(userService.getById(ownerId));
-        for (Item item : itemStorage.getAllByOwner(usr)) {
-            itemDto.add(ItemMapper.toItemDto(item));
-        }
-        return itemDto;
+        return itemStorage.getAllByOwner(usr).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> searchAvailableItem(String text) {
-        if (text == null || text.isBlank()) {
-            return new ArrayList<>();
-        }
-        List<ItemDto> itemDto = new ArrayList<>();
-        for (Item item : itemStorage.searchAvailableItem(text)) {
-            itemDto.add(ItemMapper.toItemDto(item));
-        }
-        return itemDto;
+        return itemStorage.searchAvailableItem(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long ownerId) {
         Item item = ItemMapper.toItem(itemDto);
         User usr = UserMapper.toUser(userService.getById(ownerId));
-        if (item.getAvailable() == null) {
-            throw new ValidationException("Item is Not Available");
-        }
-        if (item.getDescription() == null) {
-            throw new ValidationException("Description Is Null");
-        }
-        if (item.getName() == null || item.getName().equals("")) {
-            throw new ValidationException("Name is Invalid");
-        }
         return ItemMapper.toItemDto(itemStorage.create(item, usr));
     }
 

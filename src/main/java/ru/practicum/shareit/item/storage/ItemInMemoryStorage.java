@@ -18,6 +18,15 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public Item create(Item item, User owner) {
+        if (item.getAvailable() == null) {
+            throw new ValidationException("Item is Not Available");
+        }
+        if (item.getDescription() == null) {
+            throw new ValidationException("Description Is Null");
+        }
+        if (item.getName() == null || item.getName().equals("")) {
+            throw new ValidationException("Name is Invalid");
+        }
         idCounter++;
         item.setId(idCounter);
         item.setOwner(owner);
@@ -34,6 +43,9 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public Item getById(long id) {
+        if (items.get(id)==null) {
+            throw new NotFoundException("Item with " + id + " Id is not found");
+        }
         return items.get(id);
     }
 
@@ -50,6 +62,9 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public List<Item> searchAvailableItem(String text) {
+        if (text == null || text.isBlank()) {
+            return new ArrayList<>();
+        }
         List<Item> availableItems = new ArrayList<>();
         for (Item item : items.values()) {
             String itemToString = item.toString().toLowerCase();

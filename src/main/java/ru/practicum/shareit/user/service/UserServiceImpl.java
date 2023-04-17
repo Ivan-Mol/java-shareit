@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +25,6 @@ public class UserServiceImpl implements UserService {
 
     public UserDto create(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        if (user.getEmail() == null) {
-            throw new EmailIsExistsException("Email is mull");
-        }
-
         return UserMapper.toUserDto(userStorage.create(user));
     }
 
@@ -48,14 +43,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        List<UserDto> usersDto = new ArrayList<>();
-        for (User user : userStorage.getAll()) {
-            usersDto.add(UserMapper.toUserDto(user));
-        }
-        return usersDto;
-        //return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
-
 
 
 }
