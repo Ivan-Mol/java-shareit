@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.EmailIsExistsException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,9 +19,6 @@ public class UserInMemoryStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        if (user.getEmail() == null) {
-            throw new EmailIsExistsException("Email is mull");
-        }
         if (isEmailInvalid(user.getId(), user.getEmail())) {
             throw new EmailIsExistsException("Email Is already used");
         }

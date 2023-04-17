@@ -3,13 +3,15 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.exception.EmailIsExistsException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,8 +25,12 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto create(UserDto userDto) {
-        User forStorage = UserMapper.toUser(userDto);
-        return UserMapper.toUserDto(userStorage.create(forStorage));
+        User user = UserMapper.toUser(userDto);
+        if (user.getEmail() == null) {
+            throw new EmailIsExistsException("Email is mull");
+        }
+
+        return UserMapper.toUserDto(userStorage.create(user));
     }
 
     @Override
@@ -47,6 +53,9 @@ public class UserServiceImpl implements UserService {
             usersDto.add(UserMapper.toUserDto(user));
         }
         return usersDto;
+        //return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
+
+
 
 }
