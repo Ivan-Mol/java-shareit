@@ -8,7 +8,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 @NoArgsConstructor
 public class User {

@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.model.User;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString
 public class Item {
     private long id;

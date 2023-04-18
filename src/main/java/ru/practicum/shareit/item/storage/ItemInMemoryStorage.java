@@ -44,7 +44,9 @@ public class ItemInMemoryStorage implements ItemStorage {
     @Override
     public List<Item> searchAvailableItem(String text) {
         return items.values().stream()
-                .filter(item -> item.toString().toLowerCase().contains(text.toLowerCase()) && item.getAvailable())
+                .filter(Item::getAvailable)
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                 .collect(Collectors.toList());
     }
 }
