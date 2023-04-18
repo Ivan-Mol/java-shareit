@@ -15,5 +15,4 @@ public interface UserService {
 
     void deleteById(Long id);
 
-    boolean isEmailInvalid(Long id, String email);
 }
