@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwner() == null) {
             item.setOwner(owner);
         }
-        if (!oldItem.getOwner().equals(owner)) {
+        if (!oldItem.getOwner().getId().equals(ownerId)) {
             throw new NotFoundException("User is incorrect");
         }
         if (item.getName() == null) {
