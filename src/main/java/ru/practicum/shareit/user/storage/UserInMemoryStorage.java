@@ -22,7 +22,7 @@ public class UserInMemoryStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        if (isEmailInvalid(user.getId(), user.getEmail())) {
+        if (emails.contains(user.getEmail())) {
             throw new EmailExistsException("Email Is already used");
         }
         idCounter++;
@@ -50,16 +50,16 @@ public class UserInMemoryStorage implements UserStorage {
         if (isEmailInvalid(user.getId(), user.getEmail())) {
             throw new EmailExistsException("Email Is already used");
         }
-        emails.remove(users.get(user.getId()).getEmail());
+        User fromMap = users.get(user.getId());
+        emails.remove(fromMap.getEmail());
         emails.add(user.getEmail());
         users.put(user.getId(), user);
-        return users.get(user.getId());
+        return user;
     }
 
     @Override
     public void deleteById(Long id) {
-        emails.remove(users.get(id).getEmail());
-        getById(id);
+        emails.remove(getById(id).getEmail());
         users.remove(id);
     }
 
