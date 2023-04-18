@@ -27,8 +27,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleEmailIsExistsException(EmailIsExistsException e) {
-        log.error("Email Is Exists Exception", e);
+    public ErrorResponse handleEmailExistsException(EmailExistsException e) {
+        log.error("Email Exists Exception", e);
         return new ErrorResponse(e.getMessage());
     }
 
