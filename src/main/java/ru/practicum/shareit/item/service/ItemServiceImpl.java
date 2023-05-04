@@ -8,7 +8,7 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -21,21 +21,20 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
+    private final ItemRepository itemRepository;
     private final UserService userService;
 
     @Override
     public ItemDto getById(Long id) {
-        if (itemStorage.getById(id) == null) {
-            throw new NotFoundException("Item with " + id + " Id is not found");
-        }
-        return ItemMapper.toItemDto(itemStorage.getById(id));
+
+        return ItemMapper.toItemDto(itemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Item with " + id + " Id is not found")));
     }
 
     @Override
     public List<ItemDto> getAllByOwner(Long ownerId) {
         User usr = UserMapper.toUser(userService.getById(ownerId));
-        return itemStorage.getAllByOwner(usr).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return itemRepository.findByOwnerId(usr.getId()).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
@@ -43,28 +42,30 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemStorage.searchAvailableItem(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return itemRepository.getItemsByQuery(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long ownerId) {
-        User usr = UserMapper.toUser(userService.getById(ownerId));
-        Item item = ItemMapper.toItem(itemDto, usr);
-        if (item.getAvailable() == null) {
+        if (itemDto.getAvailable() == null) {
             throw new ValidationException("Item is Not Available");
         }
-        if (item.getDescription() == null) {
+        if (itemDto.getDescription() == null) {
             throw new ValidationException("Description Is Null");
         }
-        if (item.getName() == null || item.getName().equals("")) {
+        if (itemDto.getName() == null || itemDto.getName().equals("")) {
             throw new ValidationException("Name is Invalid");
         }
-        return ItemMapper.toItemDto(itemStorage.create(item, usr));
+        User usr = UserMapper.toUser(userService.getById(ownerId));
+        Item item = ItemMapper.toItem(itemDto, usr);
+        item.setOwner(usr);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
-        Item oldItem = itemStorage.getById(itemId);
+        Item oldItem = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Item with " + itemId + " Id is not found"));
         User owner = UserMapper.toUser(userService.getById(ownerId));
         Item item = ItemMapper.toItem(itemDto, owner);
         if (item.getOwner() == null) {
@@ -83,7 +84,15 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(oldItem.getAvailable());
         }
         item.setId(itemId);
-        return ItemMapper.toItemDto(itemStorage.update(itemId, item, owner));
-
+        item.setOwner(owner);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
+
+    @Override
+    public User getOwner(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Item with " + itemId + " Id is not found"));
+        return item.getOwner();
+    }
+
 }

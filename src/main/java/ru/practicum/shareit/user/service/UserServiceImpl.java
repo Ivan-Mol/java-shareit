@@ -2,12 +2,15 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EmailExistsException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,11 +19,17 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private UserRepository userRepository;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDto getById(Long id) {
-        return UserMapper.toUserDto(userStorage.getById(id));
+        return UserMapper.toUserDto(userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with this id " + id + " not found")));
     }
 
     public UserDto create(UserDto userDto) {
@@ -28,30 +37,35 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() == null) {
             throw new ValidationException("Email is null");
         }
-        return UserMapper.toUserDto(userStorage.create(user));
+        try {
+            return UserMapper.toUserDto(userRepository.save(user));
+        } catch (Exception e) {
+            throw new EmailExistsException("Email is already exist");
+        }
     }
 
     @Override
     public UserDto update(UserDto userDto) {
         User userFromDto = UserMapper.toUser(userDto);
-        User userFromStorage = userStorage.getById(userFromDto.getId());
+        User userFromStorage = userRepository.findById(userFromDto.getId())
+                .orElseThrow(() -> new NotFoundException("User with this id " + userFromDto.getId() + " not found"));
         if (userFromDto.getName() == null) {
             userFromDto.setName(userFromStorage.getName());
         }
         if (userFromDto.getEmail() == null) {
             userFromDto.setEmail(userFromStorage.getEmail());
         }
-        return UserMapper.toUserDto(userStorage.update(userFromDto));
+        return UserMapper.toUserDto(userRepository.save(userFromDto));
     }
 
     @Override
     public void deleteById(Long id) {
-        userStorage.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public List<UserDto> getAll() {
-        return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
 }
