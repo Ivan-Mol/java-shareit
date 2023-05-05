@@ -51,7 +51,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingReturnDto create(BookingDto bookingDto, Long userId) {
-        bookingDto.setStatus(BookingStatus.WAITING);
         User booker = UserMapper.toUser(userService.getById(userId));
         User owner = itemService.getOwner(bookingDto.getItemId());
         Item item = ItemMapper.toItem(itemService.getById(bookingDto.getItemId()), owner);
@@ -73,6 +72,7 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDto.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Can not end in the past");
         }
+        bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = BookingMapper.toBooking(bookingDto, booker, item);
         return BookingMapper.toBookingReturnDto(bookingRepository.save(booking));
     }
@@ -132,7 +132,6 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
-        result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
         return result
                 .stream()
                 .map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
@@ -165,7 +164,6 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
 
         }
-        result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId);
         return result
                 .stream()
                 .map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
