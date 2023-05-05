@@ -17,7 +17,6 @@ import ru.practicum.shareit.booking.dto.BookingReturnDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -40,25 +39,26 @@ public class BookingController {
         log.debug("received GET /booking by user Id/{}", userId);
         return bookingService.create(bookingDto, userId);
     }
+
     @PatchMapping("/{bookingId}")
     public BookingReturnDto approvingByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                              @PathVariable("bookingId") Long bookingId,
-                                             @RequestParam Boolean approved){
+                                             @RequestParam Boolean approved) {
         log.debug("received PATCH /booking by/{}", ownerId);
-        return bookingService.approvingByOwner(bookingId,ownerId,approved);
+        return bookingService.approvingByOwner(bookingId, ownerId, approved);
     }
 
     @GetMapping
     public List<BookingReturnDto> getAllByBooker(@RequestHeader("X-Sharer-User-Id") long bookerId,
-                                                 @RequestParam(name = "state",defaultValue = "ALL") String state) {
-        log.debug("received GET /AllByBooker with Id/{}",bookerId);
+                                                 @RequestParam(name = "state", defaultValue = "ALL") String state) {
+        log.debug("received GET /AllByBooker with Id/{}", bookerId);
         return bookingService.getAllByBooker(bookerId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingReturnDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId,
-                                                 @RequestParam(name = "state",defaultValue = "ALL") String state) {
-        log.debug("received GET /AllByOwner with Id/{}",ownerId);
+                                                @RequestParam(name = "state", defaultValue = "ALL") String state) {
+        log.debug("received GET /AllByOwner with Id/{}", ownerId);
 
         return bookingService.getAllByOwner(ownerId, state);
     }

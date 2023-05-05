@@ -40,9 +40,13 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository
                 .findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking with " + bookingId + " Id is not found"));
-        userService.getById(userId);
-        return BookingMapper
-                .toBookingReturnDto(booking);
+        UserDto userDto = userService.getById(userId);
+        if (booking.getItem().getOwner().getId().equals(userDto.getId()) || booking.getBooker().getId().equals(userDto.getId())) {
+            return BookingMapper
+                    .toBookingReturnDto(booking);
+        } else {
+            throw new NotFoundException("User is not owner or booker");
+        }
     }
 
     @Override
@@ -52,7 +56,7 @@ public class BookingServiceImpl implements BookingService {
         User owner = itemService.getOwner(bookingDto.getItemId());
         Item item = ItemMapper.toItem(itemService.getById(bookingDto.getItemId()), owner);
         if (booker.getId().equals(item.getOwner().getId())) {
-            throw new ValidationException("Booker is equals owner");
+            throw new NotFoundException("Booker is equals owner");
         }
         if (!item.getAvailable()) {
             throw new ValidationException("Item is not available for booking");
@@ -92,7 +96,7 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Can not start in the past");
         }
         if (!owner.getId().equals(booking.getItem().getOwner().getId())) {
-            throw new ValidationException("User is not this booking owner");
+            throw new NotFoundException("User is not this booking owner");
         }
         if (booking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new ValidationException("Booking is already approved");
@@ -114,18 +118,19 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
                 break;
             case "PAST":
-                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsBeforeOrderByStartDateDesc(ownerId,LocalDateTime.now());
+                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsBeforeOrderByStartDateDesc(ownerId, LocalDateTime.now());
                 break;
             case "FUTURE":
-                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId,LocalDateTime.now());
+                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now());
                 break;
             case "WAITING":
-                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId,BookingStatus.WAITING);
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.WAITING);
                 break;
             case "REJECTED":
-                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId,BookingStatus.REJECTED);
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.REJECTED);
                 break;
-            default: throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
+            default:
+                throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
         return result
@@ -156,7 +161,8 @@ public class BookingServiceImpl implements BookingService {
             case "REJECTED":
                 result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.REJECTED);
                 break;
-            default: throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
+            default:
+                throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
 
         }
         result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId);
