@@ -36,18 +36,13 @@ public class BookingServiceImpl implements BookingService {
     private final ItemService itemService;
 
     @Override
-    public BookingReturnDto getById(Long bookingid, Long userId) {
+    public BookingReturnDto getById(Long bookingId, Long userId) {
         Booking booking = bookingRepository
-                .findById(bookingid)
-                .orElseThrow(() -> new NotFoundException("Booking with " + bookingid + " Id is not found"));
-        UserDto userDto = userService.getById(userId);
-        if (!booking.getBooker().getId().equals(userDto.getId())) {
-            throw new ValidationException("User is not item owner");
-        }
+                .findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking with " + bookingId + " Id is not found"));
+        userService.getById(userId);
         return BookingMapper
-                .toBookingReturnDto(bookingRepository
-                        .findById(userId)
-                        .orElseThrow(() -> new NotFoundException("Booking with " + bookingid + " Id is not found")));
+                .toBookingReturnDto(booking);
     }
 
     @Override
@@ -79,24 +74,92 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReturnDto> getAllByOwner(Long bookerId, String state) {
-        userService.getById(bookerId);
-        if (state == null) {
-            state = "ALL";
+    public BookingReturnDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved) {
+        Booking booking = bookingRepository
+                .findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking with " + bookingId + " Id is not found"));
+        UserDto owner = userService.getById(ownerId);
+        if (approved == null) {
+            throw new ValidationException("status is null");
         }
+        if (booking.getStartDate().isAfter(booking.getEndDate())) {
+            throw new ValidationException("Start date is after end date");
+        }
+        if (booking.getStartDate().isEqual(booking.getEndDate())) {
+            throw new ValidationException("Start date is equal end date");
+        }
+        if (booking.getStartDate().isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Can not start in the past");
+        }
+        if (!owner.getId().equals(booking.getItem().getOwner().getId())) {
+            throw new ValidationException("User is not this booking owner");
+        }
+        if (booking.getStatus().equals(BookingStatus.APPROVED)) {
+            throw new ValidationException("Booking is already approved");
+        }
+        if (approved) {
+            booking.setStatus(BookingStatus.APPROVED);
+        } else {
+            booking.setStatus(BookingStatus.REJECTED);
+        }
+        return BookingMapper.toBookingReturnDto(bookingRepository.save(booking));
+    }
+
+    @Override
+    public List<BookingReturnDto> getAllByOwner(long ownerId, String state) {
+        userService.getById(ownerId);
+        ArrayList<Booking> result = null;
+        switch (state) {
+            case "ALL":
+                result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
+                break;
+            case "PAST":
+                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsBeforeOrderByStartDateDesc(ownerId,LocalDateTime.now());
+                break;
+            case "FUTURE":
+                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId,LocalDateTime.now());
+                break;
+            case "WAITING":
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId,BookingStatus.WAITING);
+                break;
+            case "REJECTED":
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId,BookingStatus.REJECTED);
+                break;
+            default: throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
+        }
+        result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
+        return result
+                .stream()
+                .map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingReturnDto> getAllByBooker(Long bookerId, String state) {
+        userService.getById(bookerId);
         ArrayList<Booking> result = null;
         switch (state) {
             case "ALL":
                 result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId);
                 break;
             case "PAST":
-                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeOrderByStartDateDesc(bookerId, LocalDateTime.now());
+                result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, LocalDateTime.now());
+                break;
+            case "CURRENT":
+                // result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, b);
                 break;
             case "FUTURE":
                 result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now());
                 break;
+            case "WAITING":
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.WAITING);
+                break;
+            case "REJECTED":
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.REJECTED);
+                break;
+            default: throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
 
         }
+        result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId);
         return result
                 .stream()
                 .map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
