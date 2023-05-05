@@ -120,14 +120,17 @@ public class BookingServiceImpl implements BookingService {
             case "PAST":
                 result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsBeforeOrderByStartDateDesc(ownerId, LocalDateTime.now());
                 break;
+            case "CURRENT":
+               // result = bookingRepository.getAll(ownerId, LocalDateTime.now());
+                break;
             case "FUTURE":
                 result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now());
                 break;
             case "WAITING":
-                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.WAITING);
+                result = bookingRepository.getAllByItem_OwnerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.WAITING);
                 break;
             case "REJECTED":
-                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.REJECTED);
+                result = bookingRepository.getAllByItem_OwnerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.REJECTED);
                 break;
             default:
                 throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
@@ -149,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, LocalDateTime.now());
                 break;
             case "CURRENT":
-                // result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, b);
+               // result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now());
                 break;
             case "FUTURE":
                 result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now());
