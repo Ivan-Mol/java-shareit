@@ -118,10 +118,10 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
                 break;
             case "PAST":
-                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsBeforeOrderByStartDateDesc(ownerId, LocalDateTime.now());
+                result = bookingRepository.getAllByItem_OwnerIdAndEndDateIsBeforeOrderByStartDateDesc(ownerId, LocalDateTime.now());
                 break;
             case "CURRENT":
-               // result = bookingRepository.getAll(ownerId, LocalDateTime.now());
+                result = bookingRepository.getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now(),LocalDateTime.now());
                 break;
             case "FUTURE":
                 result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now());
@@ -152,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, LocalDateTime.now());
                 break;
             case "CURRENT":
-               // result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now());
+                 result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now(),LocalDateTime.now());
                 break;
             case "FUTURE":
                 result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now());

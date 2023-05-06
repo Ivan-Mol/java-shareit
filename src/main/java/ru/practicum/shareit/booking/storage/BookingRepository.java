@@ -10,7 +10,9 @@ import java.util.ArrayList;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     ArrayList<Booking> getAllByItem_OwnerIdOrderByStartDateDesc(Long ownerId);
 
-    ArrayList<Booking> getAllByItem_OwnerIdAndStartDateIsBeforeOrderByStartDateDesc(Long ownerId, LocalDateTime currentTime);
+    ArrayList<Booking> getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Long ownerId, LocalDateTime currentTimeForStart,LocalDateTime currentTimeForEnd);
+
+    ArrayList<Booking> getAllByItem_OwnerIdAndEndDateIsBeforeOrderByStartDateDesc(long ownerId, LocalDateTime now);
 
     ArrayList<Booking> getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(Long ownerId, LocalDateTime currentTime);
 
@@ -22,9 +24,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     ArrayList<Booking> getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(Long bookerId, LocalDateTime currentDate);
 
-    //ArrayList<Booking> getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Long bookerId, LocalDateTime cuurentDate);
+    ArrayList<Booking> getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Long bookerId, LocalDateTime currentTimeForStart, LocalDateTime currentTimeForEnd);
 
     ArrayList<Booking> getAllByBookerIdAndStatusOrderByStartDateDesc(Long bookerId, BookingStatus bookingStatus);
-
-
 }
