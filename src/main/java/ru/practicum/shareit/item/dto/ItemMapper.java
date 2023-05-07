@@ -4,6 +4,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 public class ItemMapper {
+
     public static ItemDto toItemDto(Item item) {
         ItemDto itemDto = new ItemDto();
         itemDto.setId(item.getId());

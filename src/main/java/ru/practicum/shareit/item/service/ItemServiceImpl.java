@@ -26,9 +26,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getById(Long id) {
-
-        return ItemMapper.toItemDto(itemRepository.findById(id)
+        ItemDto itemDto = ItemMapper.toItemDto(itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item with " + id + " Id is not found")));
+        return itemDto;
     }
 
     @Override

@@ -35,5 +35,4 @@ public class Booking {
     private User booker; //пользователь, который осуществляет бронирование;
     private BookingStatus status; //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование подтверждено владельцем,
     // REJECTED — бронирование отклонено владельцем, CANCELED — бронирование отменено создателем.
-
 }

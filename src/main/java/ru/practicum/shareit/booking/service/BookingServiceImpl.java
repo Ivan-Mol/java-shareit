@@ -20,7 +20,6 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserService userService;
@@ -110,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReturnDto> getAllByOwner(long ownerId, String state) {
+    public List<BookingReturnDto> getAllByOwner(Long ownerId, String state) {
         userService.getById(ownerId);
         ArrayList<Booking> result = null;
         switch (state) {
@@ -121,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.getAllByItem_OwnerIdAndEndDateIsBeforeOrderByStartDateDesc(ownerId, LocalDateTime.now());
                 break;
             case "CURRENT":
-                result = bookingRepository.getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now(),LocalDateTime.now());
+                result = bookingRepository.getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now(), LocalDateTime.now());
                 break;
             case "FUTURE":
                 result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now());
@@ -152,7 +150,7 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, LocalDateTime.now());
                 break;
             case "CURRENT":
-                 result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now(),LocalDateTime.now());
+                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now(), LocalDateTime.now());
                 break;
             case "FUTURE":
                 result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now());
