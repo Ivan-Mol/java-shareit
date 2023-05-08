@@ -12,13 +12,10 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,16 +27,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
-    private final UserService userService;
-    private final ItemService itemService;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public BookingReturnDto getById(Long bookingId, Long userId) {
         Booking booking = bookingRepository
                 .findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking with " + bookingId + " Id is not found"));
-        UserDto userDto = userService.getById(userId);
-        if (booking.getItem().getOwner().getId().equals(userDto.getId()) || booking.getBooker().getId().equals(userDto.getId())) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + userId + " not found"));
+        if (booking.getItem().getOwner().getId().equals(user.getId()) || booking.getBooker().getId().equals(user.getId())) {
             return BookingMapper
                     .toBookingReturnDto(booking);
         } else {
@@ -49,9 +47,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingReturnDto create(BookingDto bookingDto, Long userId) {
-        User booker = UserMapper.toUser(userService.getById(userId));
-        User owner = itemService.getOwner(bookingDto.getItemId());
-        Item item = ItemMapper.toItem(itemService.getById(bookingDto.getItemId()), owner);
+        User booker = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + userId + " not found"));
+        Item item = itemRepository.findById(bookingDto.getItemId())
+                .orElseThrow(() -> new NotFoundException("Item with " + bookingDto.getItemId() + " Id is not found"));
         if (booker.getId().equals(item.getOwner().getId())) {
             throw new NotFoundException("Booker is equals owner");
         }
@@ -80,7 +79,8 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository
                 .findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking with " + bookingId + " Id is not found"));
-        UserDto owner = userService.getById(ownerId);
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
         if (approved == null) {
             throw new ValidationException("status is null");
         }
@@ -109,7 +109,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingReturnDto> getAllByOwner(Long ownerId, String state) {
-        userService.getById(ownerId);
+        userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
         ArrayList<Booking> result = null;
         switch (state) {
             case "ALL":
@@ -140,7 +141,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingReturnDto> getAllByBooker(Long bookerId, String state) {
-        userService.getById(bookerId);
+        userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + bookerId + " not found"));
         ArrayList<Booking> result = null;
         switch (state) {
             case "ALL":

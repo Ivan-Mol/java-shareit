@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
+    Booking getFirstByItemIdAndEndDateBeforeOrderByStartDateAsc(Long itemId, LocalDateTime currentTime);
+
+    Booking getFirstByItemIdAndEndDateAfterOrderByStartDateAsc(Long itemId, LocalDateTime currentTime);
+
     ArrayList<Booking> getAllByItem_OwnerIdOrderByStartDateDesc(Long ownerId);
 
     ArrayList<Booking> getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Long ownerId, LocalDateTime currentTimeForStart, LocalDateTime currentTimeForEnd);

@@ -3,16 +3,19 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,19 +25,32 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
-    public ItemDto getById(Long id) {
-        ItemDto itemDto = ItemMapper.toItemDto(itemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Item with " + id + " Id is not found")));
-        return itemDto;
+    public ItemDto getById(Long id, Long ownerId) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Item with " + id + " Id is not found"));
+        if (item.getOwner().getId().equals(ownerId)) {
+            ItemDto itemDto = ItemMapper.toItemDto(item);
+            Booking lastBooking = bookingRepository
+                    .getFirstByItemIdAndEndDateBeforeOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now());
+            Booking nextBooking = bookingRepository
+                    .getFirstByItemIdAndEndDateAfterOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now());
+            itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
+            itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
+            return itemDto;
+        }
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
     public List<ItemDto> getAllByOwner(Long ownerId) {
-        User usr = UserMapper.toUser(userService.getById(ownerId));
-        return itemRepository.findByOwnerId(usr.getId()).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
+        return itemRepository.findByOwnerId(user.getId()).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+
     }
 
     @Override
@@ -56,9 +72,10 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getName() == null || itemDto.getName().equals("")) {
             throw new ValidationException("Name is Invalid");
         }
-        User usr = UserMapper.toUser(userService.getById(ownerId));
-        Item item = ItemMapper.toItem(itemDto, usr);
-        item.setOwner(usr);
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
+        Item item = ItemMapper.toItem(itemDto, user);
+        item.setOwner(user);
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -66,7 +83,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
         Item oldItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item with " + itemId + " Id is not found"));
-        User owner = UserMapper.toUser(userService.getById(ownerId));
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
         Item item = ItemMapper.toItem(itemDto, owner);
         if (item.getOwner() == null) {
             item.setOwner(owner);
@@ -86,13 +104,6 @@ public class ItemServiceImpl implements ItemService {
         item.setId(itemId);
         item.setOwner(owner);
         return ItemMapper.toItemDto(itemRepository.save(item));
-    }
-
-    @Override
-    public User getOwner(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item with " + itemId + " Id is not found"));
-        return item.getOwner();
     }
 
 }
