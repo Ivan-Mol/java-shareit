@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
@@ -35,9 +36,9 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwner().getId().equals(ownerId)) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             Booking lastBooking = bookingRepository
-                    .getFirstByItemIdAndEndDateBeforeOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now());
+                    .getFirstByItemIdAndEndDateBeforeAndStatusOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
             Booking nextBooking = bookingRepository
-                    .getFirstByItemIdAndStartDateAfterOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now());
+                    .getFirstByItemIdAndStartDateAfterAndStatusOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now(),BookingStatus.APPROVED);
             itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
             itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
             return itemDto;
