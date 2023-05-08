@@ -14,8 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             " or lower(i.description) like lower(concat('%', :search, '%')) " +
             " and i.available = true";
 
-    List<Item> findByOwnerId(Long ownerId);
-
+    List<Item> getByOwnerId(Long ownerId);
     @Query(query)
     List<Item> getItemsByQuery(@Param("search") String text);
 

@@ -3,14 +3,20 @@ package ru.practicum.shareit.booking.storage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
+    ArrayList<Booking> getAllByItemIn(List<Item> items);
+    ArrayList<Booking> getAllByEndDateBeforeAndItemIn(LocalDateTime currentTime, List<Item> items);
+    ArrayList<Booking> getAllByEndDateAfterAndItemIn(LocalDateTime currentTime, List<Item> items);
+
     Booking getFirstByItemIdAndEndDateBeforeOrderByStartDateAsc(Long itemId, LocalDateTime currentTime);
 
-    Booking getFirstByItemIdAndEndDateAfterOrderByStartDateAsc(Long itemId, LocalDateTime currentTime);
+    Booking getFirstByItemIdAndStartDateAfterOrderByStartDateAsc(Long itemId, LocalDateTime currentTime);
 
     ArrayList<Booking> getAllByItem_OwnerIdOrderByStartDateDesc(Long ownerId);
 

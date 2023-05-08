@@ -37,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
             Booking lastBooking = bookingRepository
                     .getFirstByItemIdAndEndDateBeforeOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now());
             Booking nextBooking = bookingRepository
-                    .getFirstByItemIdAndEndDateAfterOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now());
+                    .getFirstByItemIdAndStartDateAfterOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now());
             itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
             itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
             return itemDto;
@@ -49,8 +49,27 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAllByOwner(Long ownerId) {
         User user = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
-        return itemRepository.findByOwnerId(user.getId()).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return itemRepository.getByOwnerId(user.getId()).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
 
+//        List<Item> items = itemRepository.getByOwnerId(user.getId());
+//        List<Booking> lastBookings = bookingRepository.getAllByEndDateBeforeAndItemIn(LocalDateTime.now(),items);
+//        List<Booking> nextBookings = bookingRepository.getAllByEndDateAfterAndItemIn(LocalDateTime.now(),items);
+//        ArrayList<ItemDto> result = null;
+//        for (Item item:items) {
+//            ItemDto itemDto = ItemMapper.toItemDto(item);
+//            for (Booking lastBooking : lastBookings) {
+//                if (lastBooking.getItem().getId() == itemDto.getId()) {
+//                    itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
+//                }
+//            }
+//            for (Booking nextBooking : nextBookings) {
+//                if (nextBooking.getItem().getId() == itemDto.getId()) {
+//                    itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
+//                }
+//            }
+//            result.add(itemDto);
+//        }
+//        return result;
     }
 
     @Override
