@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
@@ -34,14 +34,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item with " + id + " Id is not found"));
         if (item.getOwner().getId().equals(ownerId)) {
-            ItemDto itemDto = ItemMapper.toItemDto(item);
-            Booking lastBooking = bookingRepository
-                    .getFirstByItemIdAndEndDateBeforeAndStatusOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
-            Booking nextBooking = bookingRepository
-                    .getFirstByItemIdAndStartDateAfterAndStatusOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now(),BookingStatus.APPROVED);
-            itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
-            itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
-            return itemDto;
+            return getItemDtoWithBookings(item);
         }
         return ItemMapper.toItemDto(item);
     }
@@ -50,27 +43,8 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAllByOwner(Long ownerId) {
         User user = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
-        return itemRepository.getByOwnerId(user.getId()).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
-
-//        List<Item> items = itemRepository.getByOwnerId(user.getId());
-//        List<Booking> lastBookings = bookingRepository.getAllByEndDateBeforeAndItemIn(LocalDateTime.now(),items);
-//        List<Booking> nextBookings = bookingRepository.getAllByEndDateAfterAndItemIn(LocalDateTime.now(),items);
-//        ArrayList<ItemDto> result = null;
-//        for (Item item:items) {
-//            ItemDto itemDto = ItemMapper.toItemDto(item);
-//            for (Booking lastBooking : lastBookings) {
-//                if (lastBooking.getItem().getId() == itemDto.getId()) {
-//                    itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
-//                }
-//            }
-//            for (Booking nextBooking : nextBookings) {
-//                if (nextBooking.getItem().getId() == itemDto.getId()) {
-//                    itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
-//                }
-//            }
-//            result.add(itemDto);
-//        }
-//        return result;
+        List<Item> items = itemRepository.getByOwnerId(user.getId());
+        return getItemsDtoWithBookings(items);
     }
 
     @Override
@@ -126,4 +100,36 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
+    public List<ItemDto> getItemsDtoWithBookings(List<Item> items) {
+        List<Booking> lastBookings = bookingRepository
+                .getAllByEndDateBeforeAndStatusAndItemIn(LocalDateTime.now(), BookingStatus.APPROVED, items);
+        List<Booking> nextBookings = bookingRepository
+                .getAllByStartDateAfterAndStatusAndItemIn(LocalDateTime.now(), BookingStatus.APPROVED, items);
+        List<ItemDto> result = new ArrayList<>();
+        for (Item item : items) {
+            ItemDto itemDto = ItemMapper.toItemDto(item);
+            for (Booking lastBooking : lastBookings) {
+                if (lastBooking.getItem().getId() == itemDto.getId()) {
+                    itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
+                }
+            }
+            for (Booking nextBooking : nextBookings) {
+                if (nextBooking.getItem().getId() == itemDto.getId()) {
+                    itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
+                }
+            }
+            result.add(itemDto);
+        }
+        return result;
+    }
+    public ItemDto getItemDtoWithBookings(Item item){
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+        Booking lastBooking = bookingRepository
+                .getFirstByItemIdAndEndDateBeforeAndStatusOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
+        Booking nextBooking = bookingRepository
+                .getFirstByItemIdAndStartDateAfterAndStatusOrderByStartDateAsc(itemDto.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
+        itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
+        itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
+        return itemDto;
+    }
 }

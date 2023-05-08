@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,6 +27,6 @@ public class ItemRequest {
     private String description; //текст запроса, содержащий описание требуемой вещи;
     @NotNull
     private long requestorId; //пользователь, создавший запрос;
-    private LocalDate created; //дата и время создания запроса;
+    private LocalDateTime created; //дата и время создания запроса;
 
 }
