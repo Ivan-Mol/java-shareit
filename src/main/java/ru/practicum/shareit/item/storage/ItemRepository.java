@@ -4,6 +4,7 @@ package ru.practicum.shareit.item.storage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -18,4 +19,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query(query)
     List<Item> getItemsByQuery(@Param("search") String text);
+
+    default Item getByIdAndCheck(Long id) {
+        return findById(id).orElseThrow(() -> new NotFoundException("Item with " + id + " Id is not found"));
+    }
 }

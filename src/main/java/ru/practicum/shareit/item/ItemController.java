@@ -16,6 +16,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -48,13 +50,13 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto update(@PathVariable Long itemId,
                           @RequestHeader("X-Sharer-User-Id") long ownerId,
-                          @RequestBody @Valid ItemDto itemDto) {
+                          @RequestBody ItemDto itemDto) {
         log.debug("received PATCH /items with body {}", itemDto);
         return itemService.updateItem(itemId, itemDto, ownerId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchAvailableItem(@RequestParam(name = "text") String text) {
+    public List<ItemDto> searchAvailableItem(@RequestParam (name = "text") String text) {
         log.debug("received GET /searchAvailableItem/{}", text);
         return itemService.searchAvailableItem(text);
     }
