@@ -137,7 +137,7 @@ public class ItemServiceImpl implements ItemService {
 
     public Booking getLastBooking(Long itemId, LocalDateTime currentTime) {
         return bookingRepository
-                .getFirstByItemIdAndStatusAndStartDateLessThanEqualOrderByStartDateDesc(itemId, BookingStatus.APPROVED, currentTime);
+                .getFirstByItemIdAndStatusAndStartDateIsBeforeOrderByStartDateDesc(itemId, BookingStatus.APPROVED, currentTime);
     }
 
     public Booking getNextBooking(Long itemId, LocalDateTime currentTime) {
