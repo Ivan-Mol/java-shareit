@@ -4,11 +4,11 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingReturnDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -111,19 +111,20 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingReturnDto> getAllByOwner(Long ownerId, String state) {
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
+        LocalDateTime currentTime = LocalDateTime.now();
         ArrayList<Booking> result = null;
         switch (state) {
             case "ALL":
                 result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
                 break;
             case "PAST":
-                result = bookingRepository.getAllByItem_OwnerIdAndEndDateIsBeforeOrderByStartDateDesc(ownerId, LocalDateTime.now());
+                result = bookingRepository.getAllByItem_OwnerIdAndEndDateIsBeforeOrderByStartDateDesc(ownerId, currentTime);
                 break;
             case "CURRENT":
-                result = bookingRepository.getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now(), LocalDateTime.now());
+                result = bookingRepository.getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(ownerId, currentTime, currentTime);
                 break;
             case "FUTURE":
-                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, LocalDateTime.now());
+                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, currentTime);
                 break;
             case "WAITING":
                 result = bookingRepository.getAllByItem_OwnerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.WAITING);
@@ -143,19 +144,20 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingReturnDto> getAllByBooker(Long bookerId, String state) {
         userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException("User with this id " + bookerId + " not found"));
+        LocalDateTime currentTime = LocalDateTime.now();
         ArrayList<Booking> result = null;
         switch (state) {
             case "ALL":
                 result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId);
                 break;
             case "PAST":
-                result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, LocalDateTime.now());
+                result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, currentTime);
                 break;
             case "CURRENT":
-                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now(), LocalDateTime.now());
+                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, currentTime, currentTime);
                 break;
             case "FUTURE":
-                result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, LocalDateTime.now());
+                result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, currentTime);
                 break;
             case "WAITING":
                 result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.WAITING);
