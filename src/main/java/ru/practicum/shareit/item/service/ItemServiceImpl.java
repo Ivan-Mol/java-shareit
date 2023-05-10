@@ -44,7 +44,9 @@ public class ItemServiceImpl implements ItemService {
             itemDto.setComments(commentsOfItem.stream().map(CommentMapper::toCommentDto).collect(Collectors.toList()));
             return itemDto;
         }
-        return ItemMapper.toItemDto(item);
+        ItemDto itemDto= ItemMapper.toItemDto(item);
+        itemDto.setComments(commentsOfItem.stream().map(CommentMapper::toCommentDto).collect(Collectors.toList()));
+        return itemDto;
     }
 
     @Override
@@ -154,9 +156,9 @@ public class ItemServiceImpl implements ItemService {
         ItemDto itemDto = ItemMapper.toItemDto(item);
         LocalDateTime localDateTime = LocalDateTime.now();
         Booking lastBooking = bookingRepository
-                .getFirstByItemIdAndEndDateBeforeOrderByStartDateDesc(itemDto.getId(), localDateTime);
+                .getFirstByItemIdAndEndDateBeforeAndStatusOrderByStartDateDesc(itemDto.getId(), localDateTime,BookingStatus.APPROVED);
         Booking nextBooking = bookingRepository
-                .getFirstByItemIdAndStartDateAfterOrderByStartDateAsc(itemDto.getId(), localDateTime);
+                .getFirstByItemIdAndStartDateAfterAndStatusOrderByStartDateAsc(itemDto.getId(), localDateTime,BookingStatus.APPROVED);
         itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking));
         itemDto.setNextBooking(BookingMapper.toBookingShortDto(nextBooking));
         return itemDto;
