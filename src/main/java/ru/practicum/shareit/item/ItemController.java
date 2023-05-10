@@ -16,8 +16,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -56,7 +54,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchAvailableItem(@RequestParam (name = "text") String text) {
+    public List<ItemDto> searchAvailableItem(@RequestParam(name = "text") String text) {
         log.debug("received GET /searchAvailableItem/{}", text);
         return itemService.searchAvailableItem(text);
     }

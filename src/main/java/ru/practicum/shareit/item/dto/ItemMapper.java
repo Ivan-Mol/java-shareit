@@ -30,7 +30,8 @@ public class ItemMapper {
         item.setOwner(owner);
         return item;
     }
-    public static List<ItemDto> itemlistToitemdtolist(List<Item> items){
+
+    public static List<ItemDto> itemlistToitemdtolist(List<Item> items) {
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 }

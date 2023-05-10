@@ -43,7 +43,7 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public BookingResponseDto approvingByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                                @PathVariable("bookingId") Long bookingId,
-                                               @RequestParam  Boolean approved) {
+                                               @RequestParam Boolean approved) {
         log.debug("received PATCH /booking by/{}", ownerId);
         return bookingService.approvingByOwner(bookingId, ownerId, approved);
     }

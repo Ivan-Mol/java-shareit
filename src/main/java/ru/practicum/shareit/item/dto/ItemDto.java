@@ -26,13 +26,15 @@ public class ItemDto {
     private BookingResponseShortDto nextBooking;
     private List<CommentDto> comments;
 
-    public void setLastBooking(Booking booking){
+    public void setLastBooking(Booking booking) {
         this.lastBooking = BookingMapper.toBookingShortDto(booking);
     }
-    public void setNextBooking(Booking booking){
+
+    public void setNextBooking(Booking booking) {
         this.nextBooking = BookingMapper.toBookingShortDto(booking);
     }
-    public void setComments(List<Comment> comments){
+
+    public void setComments(List<Comment> comments) {
         this.comments = comments.stream().map(CommentMapper::toCommentDto).collect(Collectors.toList());
     }
 }

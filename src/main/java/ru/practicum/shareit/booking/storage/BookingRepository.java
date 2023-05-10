@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    default Booking getByIdAndCheck(Long id){
-       return findById(id).orElseThrow(() -> new NotFoundException("Booking with " + id + " Id is not found"));
+    default Booking getByIdAndCheck(Long id) {
+        return findById(id).orElseThrow(() -> new NotFoundException("Booking with " + id + " Id is not found"));
     }
+
     Booking getFirstByItemIdAndStatusAndStartDateIsBeforeOrderByStartDateDesc(Long itemId, BookingStatus bookingStatus, LocalDateTime currentTime);
 
     Booking getFirstByItemIdAndStatusAndStartDateIsAfterOrderByStartDateAsc(Long itemId, BookingStatus bookingStatus, LocalDateTime currentTime);

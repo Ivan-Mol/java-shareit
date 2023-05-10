@@ -43,7 +43,8 @@ public class BookingMapper {
         }
         return bookingResponseShortDto;
     }
-    public static List<BookingResponseDto> bookingListToBookingReturnDtoList(List<Booking> bookings){
+
+    public static List<BookingResponseDto> bookingListToBookingReturnDtoList(List<Booking> bookings) {
         return bookings.stream().map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
     }
 }
