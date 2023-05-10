@@ -6,93 +6,66 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingReturnDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.exceptions.NotFoundException;
+import ru.practicum.shareit.exception.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
     @Override
-    public BookingReturnDto getById(Long bookingId, Long userId) {
-        Booking booking = bookingRepository
-                .findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Booking with " + bookingId + " Id is not found"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with this id " + userId + " not found"));
+    public BookingResponseDto getById(Long bookingId, Long userId) {
+        Booking booking = bookingRepository.getByIdAndCheck(bookingId);
+        User user = userRepository.getByIdAndCheck(userId);
         if (booking.getItem().getOwner().getId().equals(user.getId()) || booking.getBooker().getId().equals(user.getId())) {
-            return BookingMapper
-                    .toBookingReturnDto(booking);
+            return BookingMapper.toBookingReturnDto(booking);
         } else {
             throw new NotFoundException("User is not owner or booker");
         }
     }
 
     @Override
-    public BookingReturnDto create(BookingDto bookingDto, Long userId) {
-        User booker = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with this id " + userId + " not found"));
-        Item item = itemRepository.findById(bookingDto.getItemId())
-                .orElseThrow(() -> new NotFoundException("Item with " + bookingDto.getItemId() + " Id is not found"));
+    public BookingResponseDto create(BookingDto bookingDto, Long userId) {
+        User booker = userRepository.getByIdAndCheck(userId);
+        Item item = itemRepository.getByIdAndCheck(bookingDto.getItemId());
         if (booker.getId().equals(item.getOwner().getId())) {
             throw new NotFoundException("Booker is equals owner");
         }
         if (!item.getAvailable()) {
             throw new ValidationException("Item is not available for booking");
         }
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
-            throw new ValidationException("Start date is after end date");
-        }
-        if (bookingDto.getStart().isEqual(bookingDto.getEnd())) {
-            throw new ValidationException("Start date is equal end date");
-        }
-        if (bookingDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Can not start in the past");
-        }
-        if (bookingDto.getEnd().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Can not end in the past");
-        }
         bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = BookingMapper.toBooking(bookingDto, booker, item);
+        bookingDateCheck(booking);
         return BookingMapper.toBookingReturnDto(bookingRepository.save(booking));
     }
 
     @Override
-    public BookingReturnDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved) {
-        Booking booking = bookingRepository
-                .findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Booking with " + bookingId + " Id is not found"));
-        User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
+    public BookingResponseDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved) {
+        Booking booking = bookingRepository.getByIdAndCheck(bookingId);
+        User owner = userRepository.getByIdAndCheck(ownerId);
         if (approved == null) {
             throw new ValidationException("status is null");
         }
-        if (booking.getStartDate().isAfter(booking.getEndDate())) {
-            throw new ValidationException("Start date is after end date");
-        }
-        if (booking.getStartDate().isEqual(booking.getEndDate())) {
-            throw new ValidationException("Start date is equal end date");
-        }
-        if (booking.getStartDate().isBefore(LocalDateTime.now())) {
-            throw new ValidationException("Can not start in the past");
-        }
+        bookingDateCheck(booking);
         if (!owner.getId().equals(booking.getItem().getOwner().getId())) {
             throw new NotFoundException("User is not this booking owner");
         }
@@ -108,9 +81,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReturnDto> getAllByOwner(Long ownerId, String state) {
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException("User with this id " + ownerId + " not found"));
+    public List<BookingResponseDto> getAllByOwner(Long ownerId, String state) {
+        userRepository.getByIdAndCheck(ownerId);
         LocalDateTime currentTime = LocalDateTime.now();
         ArrayList<Booking> result = null;
         switch (state) {
@@ -135,15 +107,12 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
-        return result
-                .stream()
-                .map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
+        return BookingMapper.bookingListToBookingReturnDtoList(result);
     }
 
     @Override
-    public List<BookingReturnDto> getAllByBooker(Long bookerId, String state) {
-        userRepository.findById(bookerId)
-                .orElseThrow(() -> new NotFoundException("User with this id " + bookerId + " not found"));
+    public List<BookingResponseDto> getAllByBooker(Long bookerId, String state) {
+        userRepository.getByIdAndCheck(bookerId);
         LocalDateTime currentTime = LocalDateTime.now();
         ArrayList<Booking> result = null;
         switch (state) {
@@ -167,10 +136,22 @@ public class BookingServiceImpl implements BookingService {
                 break;
             default:
                 throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
-
         }
-        return result
-                .stream()
-                .map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
+        return BookingMapper.bookingListToBookingReturnDtoList(result);
+    }
+
+    private void bookingDateCheck(Booking booking) {
+        if (booking.getStartDate().isAfter(booking.getEndDate())) {
+            throw new ValidationException("Start date is after end date");
+        }
+        if (booking.getStartDate().isEqual(booking.getEndDate())) {
+            throw new ValidationException("Start date is equal end date");
+        }
+        if (booking.getStartDate().isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Can not start in the past");
+        }
+        if (booking.getEndDate().isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Can not end in the past");
+        }
     }
 }

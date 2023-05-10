@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.exceptions.NotFoundException;
+import ru.practicum.shareit.exception.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -56,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> searchAvailableItem(String text) {
         return text.isBlank() ?
                 new ArrayList<>() :
-                ItemMapper.ItemListToItemDtoList(itemRepository.getItemsByQuery(text));
+                ItemMapper.itemlistToitemdtolist(itemRepository.getItemsByQuery(text));
     }
 
     @Override

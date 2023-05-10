@@ -6,6 +6,9 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserShortDto;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class BookingMapper {
 
     public static Booking toBooking(BookingDto bookingDto, User booker, Item item) {
@@ -19,25 +22,28 @@ public class BookingMapper {
         return booking;
     }
 
-    public static BookingReturnDto toBookingReturnDto(Booking booking) {
-        BookingReturnDto bookingReturnDto = new BookingReturnDto();
-        bookingReturnDto.setId(booking.getId());
-        bookingReturnDto.setStart(booking.getStartDate());
-        bookingReturnDto.setEnd(booking.getEndDate());
-        bookingReturnDto.setItem(new ItemShortDto(booking.getItem().getId(), booking.getItem().getName()));
-        bookingReturnDto.setBooker(new UserShortDto(booking.getBooker().getId()));
-        bookingReturnDto.setStatus(booking.getStatus());
-        return bookingReturnDto;
+    public static BookingResponseDto toBookingReturnDto(Booking booking) {
+        BookingResponseDto bookingResponseDto = new BookingResponseDto();
+        bookingResponseDto.setId(booking.getId());
+        bookingResponseDto.setStart(booking.getStartDate());
+        bookingResponseDto.setEnd(booking.getEndDate());
+        bookingResponseDto.setItem(new ItemShortDto(booking.getItem().getId(), booking.getItem().getName()));
+        bookingResponseDto.setBooker(new UserShortDto(booking.getBooker().getId()));
+        bookingResponseDto.setStatus(booking.getStatus());
+        return bookingResponseDto;
     }
 
-    public static BookingShortDto toBookingShortDto(Booking booking) {
-        BookingShortDto bookingShortDto = new BookingShortDto();
+    public static BookingResponseShortDto toBookingShortDto(Booking booking) {
+        BookingResponseShortDto bookingResponseShortDto = new BookingResponseShortDto();
         if (booking != null) {
-            bookingShortDto.setId(booking.getId());
-            bookingShortDto.setBookerId(booking.getBooker().getId());
+            bookingResponseShortDto.setId(booking.getId());
+            bookingResponseShortDto.setBookerId(booking.getBooker().getId());
         } else {
-            bookingShortDto = null;
+            bookingResponseShortDto = null;
         }
-        return bookingShortDto;
+        return bookingResponseShortDto;
+    }
+    public static List<BookingResponseDto> bookingListToBookingReturnDtoList(List<Booking> bookings){
+        return bookings.stream().map(BookingMapper::toBookingReturnDto).collect(Collectors.toList());
     }
 }

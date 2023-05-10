@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingReturnDto {
+public class BookingResponseDto {
     private Long id;
     @NotNull
     private LocalDateTime start; //дата и время начала бронирования;

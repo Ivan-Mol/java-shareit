@@ -1,13 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.booking.dto.BookingResponseShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.request.ItemRequest;
@@ -27,8 +22,8 @@ public class ItemDto {
     @NotNull(message = "available is null")
     private Boolean available;
     private ItemRequest request;
-    private BookingShortDto lastBooking;
-    private BookingShortDto nextBooking;
+    private BookingResponseShortDto lastBooking;
+    private BookingResponseShortDto nextBooking;
     private List<CommentDto> comments;
 
     public void setLastBooking(Booking booking){

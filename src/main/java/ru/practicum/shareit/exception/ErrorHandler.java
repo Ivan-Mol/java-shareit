@@ -7,6 +7,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.exception.exceptions.EmailExistsException;
+import ru.practicum.shareit.exception.exceptions.NotFoundException;
+import ru.practicum.shareit.exception.exceptions.OwnerIsInvalidException;
+import ru.practicum.shareit.exception.exceptions.ValidationException;
 
 @RestControllerAdvice
 @Slf4j
