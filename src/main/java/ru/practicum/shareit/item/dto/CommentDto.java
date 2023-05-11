@@ -12,6 +12,6 @@ public class CommentDto {
     private LocalDateTime created;
     @NotBlank(message = "text is empty")
     private String text;
-    private Long item_id;
-    private Long user_id;
+    private Long itemId;
+    private Long userId;
 }
