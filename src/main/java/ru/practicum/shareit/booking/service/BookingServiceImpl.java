@@ -59,6 +59,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public void deleteById(Long id) {bookingRepository.deleteById(id);}
+
+    @Override
     public BookingResponseDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved) {
         Booking booking = bookingRepository.getByIdAndCheck(bookingId);
         User owner = userRepository.getByIdAndCheck(ownerId);

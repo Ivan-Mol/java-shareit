@@ -15,4 +15,6 @@ public interface BookingService {
     BookingResponseDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved);
 
     List<BookingResponseDto> getAllByOwner(Long ownerId, String state);
+
+    void deleteById(Long id);
 }
