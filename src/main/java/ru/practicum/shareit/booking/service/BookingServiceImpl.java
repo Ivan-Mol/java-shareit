@@ -63,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.getByIdAndCheck(bookingId);
         User owner = userRepository.getByIdAndCheck(ownerId);
         if (approved == null) {
-            throw new ValidationException("status is null");
+            throw new ValidationException("Status is null");
         }
         bookingDateCheck(booking);
         if (!owner.getId().equals(booking.getItem().getOwner().getId())) {
