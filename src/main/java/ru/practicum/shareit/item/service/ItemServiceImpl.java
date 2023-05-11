@@ -76,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
             Comment comment = commentRepository.save(CommentMapper.toComment(commentDto, user, item));
             return CommentMapper.toCommentDto(comment);
         } else {
-            throw new ValidationException("User with id " + userId + " has no bookings with item id " + item.getId());
+            throw new ValidationException("user with id " + userId + " has no bookings with item id " + item.getId());
         }
     }
 
@@ -96,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
             item.setOwner(owner);
         }
         if (!oldItem.getOwner().getId().equals(ownerId)) {
-            throw new NotFoundException("User is incorrect");
+            throw new NotFoundException("user is incorrect");
         }
         if (item.getName() == null) {
             item.setName(oldItem.getName());
