@@ -66,6 +66,6 @@ public class BookingController {
     @DeleteMapping("/{id}")
     public void deleteBookingById(@PathVariable Long id) {
         log.debug("received DELETE /bookings/{id} by id = {}", id);
-         bookingService.deleteById(id);
+        bookingService.deleteById(id);
     }
 }
