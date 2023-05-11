@@ -56,4 +56,10 @@ public class ErrorHandler {
         log.error("Owner Is Invalid Exception", e);
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleAll(Throwable e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
