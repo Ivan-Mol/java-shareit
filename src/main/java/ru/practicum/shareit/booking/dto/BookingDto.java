@@ -1,24 +1,24 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.shareit.booking.BookingStatus;
+import lombok.Data;
+import ru.practicum.shareit.booking.model.BookingStatus;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class BookingDto {
-    private long id;
-    private LocalDate start; //дата и время начала бронирования;
-    private LocalDate end; //дата и время конца бронирования;
+    private Long id;
     @NotNull
-    private long itemId; //вещь, которую пользователь бронирует;
+    private LocalDateTime start; //дата и время начала бронирования;
     @NotNull
-    private long bookerId; //пользователь, который осуществляет бронирование;
-    private BookingStatus status; //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование подтверждено владельцем,
+    private LocalDateTime end; //дата и время конца бронирования;
+    private Long itemId;
+    private Long bookerId;
+    @Enumerated(EnumType.ORDINAL)
+    private BookingStatus status;
+    //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование подтверждено владельцем,
     // REJECTED — бронирование отклонено владельцем, CANCELED — бронирование отменено создателем.
 }

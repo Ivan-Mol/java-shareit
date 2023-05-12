@@ -3,11 +3,11 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ValidationException;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,43 +15,42 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public UserDto getById(Long id) {
-        return UserMapper.toUserDto(userStorage.getById(id));
+        return UserMapper.toUserDto(userRepository.getByIdAndCheck(id));
     }
 
+    @Override
     public UserDto create(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        if (user.getEmail() == null) {
-            throw new ValidationException("Email is null");
-        }
-        return UserMapper.toUserDto(userStorage.create(user));
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto update(UserDto userDto) {
         User userFromDto = UserMapper.toUser(userDto);
-        User userFromStorage = userStorage.getById(userFromDto.getId());
+        User userFromStorage = userRepository.getByIdAndCheck(userFromDto.getId());
         if (userFromDto.getName() == null) {
             userFromDto.setName(userFromStorage.getName());
         }
         if (userFromDto.getEmail() == null) {
             userFromDto.setEmail(userFromStorage.getEmail());
         }
-        return UserMapper.toUserDto(userStorage.update(userFromDto));
+        return UserMapper.toUserDto(userRepository.save(userFromDto));
     }
 
     @Override
     public void deleteById(Long id) {
-        userStorage.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public List<UserDto> getAll() {
-        return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
 }
