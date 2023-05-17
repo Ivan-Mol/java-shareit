@@ -5,7 +5,6 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingResponseShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.request.ItemRequest;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -21,7 +20,7 @@ public class ItemDto {
     private String description;
     @NotNull(message = "available is null")
     private Boolean available;
-    private ItemRequest request;
+    private Long requestId;
     private BookingResponseShortDto lastBooking;
     private BookingResponseShortDto nextBooking;
     private List<CommentDto> comments;
