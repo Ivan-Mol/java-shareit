@@ -122,7 +122,7 @@ public class BookingServiceImpl implements BookingService {
         userRepository.getByIdAndCheck(bookerId);
         LocalDateTime currentTime = LocalDateTime.now();
         ArrayList<Booking> result = null;
-        PageRequest request = PageRequest.of(from/size, size);
+        PageRequest request = PageRequest.of(from / size, size);
         switch (state) {
             case "ALL":
                 result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId, request);

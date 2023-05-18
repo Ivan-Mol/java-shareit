@@ -29,8 +29,8 @@ public class RequestController {
     private final RequestService requestService;
 
     @GetMapping("/{requestId}")
-    public RequestReturnDto getItemRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                               @PathVariable Long requestId) {
+    public RequestReturnDto getById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                    @PathVariable Long requestId) {
         log.debug("received GET /itemRequest Id/{}", requestId);
         return requestService.getById(requestId, userId);
     }

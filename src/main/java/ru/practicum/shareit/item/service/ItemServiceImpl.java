@@ -65,26 +65,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto createComment(Long itemId, CommentDto commentDto, long userId) {
-        Item item = itemRepository.getByIdAndCheck(itemId);
-        User user = userRepository.getByIdAndCheck(userId);
-        LocalDateTime timeOfCreation = LocalDateTime.now();
-        commentDto.setCreated(timeOfCreation);
-        List<Booking> bookings = bookingRepository.getAllByBookerIdAndItem_IdAndStatusAndEndDateIsBefore(
-                userId,
-                itemId,
-                BookingStatus.APPROVED,
-                timeOfCreation);
-        if (!bookings.isEmpty()) {
-            Comment comment = commentRepository.save(CommentMapper.toComment(commentDto, user, item));
-            return CommentMapper.toCommentDto(comment);
-        } else {
-            throw new ValidationException("user with id " + userId + " has no bookings with item id " + item.getId());
-        }
-    }
-
-    @Override
-    public ItemDto createItem(ItemDto itemDto, long ownerId) {
+    public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         User user = userRepository.getByIdAndCheck(ownerId);
         Item item = ItemMapper.toItem(itemDto, user);
         Request request = null;
@@ -141,6 +122,25 @@ public class ItemServiceImpl implements ItemService {
             result.add(itemDto);
         }
         return result;
+    }
+
+    @Override
+    public CommentDto createComment(Long itemId, CommentDto commentDto, Long userId) {
+        Item item = itemRepository.getByIdAndCheck(itemId);
+        User user = userRepository.getByIdAndCheck(userId);
+        LocalDateTime timeOfCreation = LocalDateTime.now();
+        commentDto.setCreated(timeOfCreation);
+        List<Booking> bookings = bookingRepository.getAllByBookerIdAndItem_IdAndStatusAndEndDateIsBefore(
+                userId,
+                itemId,
+                BookingStatus.APPROVED,
+                timeOfCreation);
+        if (!bookings.isEmpty()) {
+            Comment comment = commentRepository.save(CommentMapper.toComment(commentDto, user, item));
+            return CommentMapper.toCommentDto(comment);
+        } else {
+            throw new ValidationException("user with id " + userId + " has no bookings with item id " + item.getId());
+        }
     }
 
     public Booking getLastBooking(Long itemId, LocalDateTime currentTime) {

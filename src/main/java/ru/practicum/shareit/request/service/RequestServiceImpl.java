@@ -59,7 +59,8 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requests = requestRepository.findRequestsByRequestorIdNotOrderByCreatedDesc(userId, PageRequest.of(from, size));
         return getRequestReturnDtoWithItems(requests);
     }
-    public List<RequestReturnDto> getRequestReturnDtoWithItems(List<Request> requests){
+
+    public List<RequestReturnDto> getRequestReturnDtoWithItems(List<Request> requests) {
         List<RequestReturnDto> requestReturnDtos = RequestMapper.RequestListToRequestReturnDtoList(requests);
         List<Item> itemsWithRequestsId = itemRepository.getItemsByRequestIn(requests);
         for (RequestReturnDto request : requestReturnDtos) {

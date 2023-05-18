@@ -67,7 +67,7 @@ public class BookingController {
     public List<BookingResponseDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId,
                                                   @RequestParam(name = "state", defaultValue = "ALL") String state,
                                                   @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
-                                                  @RequestParam(name = "size", defaultValue = "20") @Min(1)  Integer size) {
+                                                  @RequestParam(name = "size", defaultValue = "20") @Min(1) @Max(100) Integer size) {
         log.debug("received GET /AllByOwner with Id/{}", ownerId);
         return bookingService.getAllByOwner(ownerId, state, from, size);
     }

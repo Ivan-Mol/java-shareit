@@ -8,7 +8,7 @@ import java.util.List;
 
 @Component
 public interface ItemService {
-    ItemDto createItem(ItemDto itemDto, long ownerId);
+    ItemDto createItem(ItemDto itemDto, Long ownerId);
 
     ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId);
 
@@ -18,5 +18,5 @@ public interface ItemService {
 
     List<ItemDto> searchAvailableItem(String text);
 
-    CommentDto createComment(Long itemId, CommentDto commentDto, long ownerId);
+    CommentDto createComment(Long itemId, CommentDto commentDto, Long ownerId);
 }
