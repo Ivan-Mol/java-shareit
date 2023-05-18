@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RequestMapper {
-    public static Request RequestDtoToRequest(RequestDto requestDto) {
+    public static Request requestDtoToRequest(RequestDto requestDto) {
         Request request = new Request();
         request.setId(requestDto.getId());
         request.setDescription(requestDto.getDescription());
@@ -16,7 +16,7 @@ public class RequestMapper {
         return request;
     }
 
-    public static RequestReturnDto RequestToRequestReturnDto(Request request) {
+    public static RequestReturnDto requestToRequestReturnDto(Request request) {
         RequestReturnDto requestReturnDto = new RequestReturnDto();
         requestReturnDto.setId(request.getId());
         requestReturnDto.setDescription(request.getDescription());
@@ -26,7 +26,7 @@ public class RequestMapper {
         return requestReturnDto;
     }
 
-    public static List<RequestReturnDto> RequestListToRequestReturnDtoList(List<Request> requests) {
-        return requests.stream().map(RequestMapper::RequestToRequestReturnDto).collect(Collectors.toList());
+    public static List<RequestReturnDto> requestListToRequestReturnDtoList(List<Request> requests) {
+        return requests.stream().map(RequestMapper::requestToRequestReturnDto).collect(Collectors.toList());
     }
 }

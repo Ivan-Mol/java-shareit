@@ -32,7 +32,7 @@ public class RequestServiceImpl implements RequestService {
         userRepository.getByIdAndCheck(userId);
         Request request = requestRepository.getByIdAndCheck(requestId);
         List<Item> items = itemRepository.getItemsByRequest(request);
-        RequestReturnDto requestReturnDto = RequestMapper.RequestToRequestReturnDto(request);
+        RequestReturnDto requestReturnDto = RequestMapper.requestToRequestReturnDto(request);
         requestReturnDto.setItems(ItemMapper.itemlistToitemForRequestDtolist(items));
         return requestReturnDto;
     }
@@ -42,8 +42,8 @@ public class RequestServiceImpl implements RequestService {
         userRepository.getByIdAndCheck(userId);
         requestDto.setRequestorId(userId);
         requestDto.setCreated(LocalDateTime.now());
-        Request request = requestRepository.save(RequestMapper.RequestDtoToRequest(requestDto));
-        return RequestMapper.RequestToRequestReturnDto(request);
+        Request request = requestRepository.save(RequestMapper.requestDtoToRequest(requestDto));
+        return RequestMapper.requestToRequestReturnDto(request);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     public List<RequestReturnDto> getRequestReturnDtoWithItems(List<Request> requests) {
-        List<RequestReturnDto> requestReturnDtos = RequestMapper.RequestListToRequestReturnDtoList(requests);
+        List<RequestReturnDto> requestReturnDtos = RequestMapper.requestListToRequestReturnDtoList(requests);
         List<Item> itemsWithRequestsId = itemRepository.getItemsByRequestIn(requests);
         for (RequestReturnDto request : requestReturnDtos) {
             for (Item item : itemsWithRequestsId) {
