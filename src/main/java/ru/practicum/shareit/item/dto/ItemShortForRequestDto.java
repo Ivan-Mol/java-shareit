@@ -6,7 +6,7 @@ import lombok.Data;
 public class ItemShortForRequestDto {
     private Long id;
     private String name;
-    private String Description;
+    private String description;
     private Boolean available;
     private Long requestId;
 }
