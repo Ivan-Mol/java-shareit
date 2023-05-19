@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-import org.aspectj.lang.annotation.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,10 +107,11 @@ class BookingServiceImplTest {
         assertThrows(NotFoundException.class, () ->
                 bookingService.getAllByBooker(999L, BookingStatus.WAITING.toString(), 0, 10));
     }
+
     @AfterEach
-    void afterEach(){
+    void afterEach() {
         bookingService.deleteById(createdBooking.getId());
-        itemService.deleteById(createdItem.getId(),createdOwner.getId());
+        itemService.deleteById(createdItem.getId(), createdOwner.getId());
         userService.deleteById(createdOwner.getId());
         userService.deleteById(createdBooker.getId());
     }
