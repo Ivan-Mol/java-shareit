@@ -74,12 +74,6 @@ class BookingServiceIntegrationTest {
         assertEquals(createdBooking.getEnd().withNano(0), actual.getEnd().withNano(0));
     }
 
-
-    @Test
-    void approvingByOwner() {
-
-    }
-
     @Test
     void getAllByOwner() {
         List<BookingResponseDto> bookings = bookingService.getAllByOwner(createdOwner.getId(),
