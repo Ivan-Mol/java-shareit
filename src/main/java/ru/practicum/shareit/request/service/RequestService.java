@@ -13,4 +13,6 @@ public interface RequestService {
     List<RequestReturnDto> getAllByRequestor(long requestorId);
 
     List<RequestReturnDto> getAll(long userId, int from, int size);
+
+    void deleteById(Long requestId, Long userId);
 }

@@ -101,6 +101,18 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
+    @Override
+    public void deleteById(Long itemId, Long userId) {
+        User user = userRepository.getByIdAndCheck(userId);
+        Item item = itemRepository.getByIdAndCheck(itemId);
+        if (user.equals(item.getOwner())) {
+            itemRepository.deleteById(itemId);
+        } else {
+            throw new ValidationException("User with id " + userId + " is not owner of Item with Id: " + itemId);
+        }
+
+    }
+
     public List<ItemDto> getItemsDtoWithLastAndNextBookings(List<Item> items) {
         List<Booking> lastBookings = bookingRepository
                 .getAllByEndDateBeforeAndStatusAndItemInOrderByStartDateDesc(LocalDateTime.now(), BookingStatus.APPROVED, items);

@@ -60,6 +60,12 @@ public class RequestServiceImpl implements RequestService {
         return getRequestReturnDtoWithItems(requests);
     }
 
+    @Override
+    public void deleteById(Long requestId, Long userId) {
+        userRepository.getByIdAndCheck(userId);
+        requestRepository.deleteById(requestId);
+    }
+
     public List<RequestReturnDto> getRequestReturnDtoWithItems(List<Request> requests) {
         List<RequestReturnDto> requestReturnDtos = RequestMapper.requestListToRequestReturnDtoList(requests);
         List<Item> itemsWithRequestsId = itemRepository.getItemsByRequestIn(requests);

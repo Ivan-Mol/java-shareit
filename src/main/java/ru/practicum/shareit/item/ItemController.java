@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +52,13 @@ public class ItemController {
                           @RequestBody ItemDto itemDto) {
         log.debug("received PATCH /items with body {}", itemDto);
         return itemService.updateItem(itemId, itemDto, ownerId);
+    }
+
+    @DeleteMapping("/{itemId}")
+    public void deleteById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                           @PathVariable Long itemId) {
+        log.debug("received DELETE /itemRequest Id/{}", itemId);
+        itemService.deleteById(itemId, userId);
     }
 
     @GetMapping("/search")

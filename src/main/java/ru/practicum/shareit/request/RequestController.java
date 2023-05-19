@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +57,11 @@ public class RequestController {
         return requestService.create(requestDto, userId);
     }
 
+    @DeleteMapping("/{requestId}")
+    public void deleteById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                           @PathVariable Long requestId) {
+        log.debug("received DELETE / Request Id/{}", requestId);
+        requestService.deleteById(requestId, userId);
+    }
 
 }
