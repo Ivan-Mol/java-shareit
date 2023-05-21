@@ -60,13 +60,13 @@ class BookingServiceIntegrationTest {
 
         ItemDto item = new ItemDto();
         item.setName("testItem");
-        item.setDescription("5");
+        item.setDescription("testDescription");
         item.setAvailable(true);
         createdItem = itemService.createItem(item, createdOwner.getId());
 
         ItemDto item2 = new ItemDto();
         item2.setName("testItem");
-        item2.setDescription("5");
+        item2.setDescription("testDescription");
         item2.setAvailable(false);
         createdItem2 = itemService.createItem(item2, createdOwner.getId());
 

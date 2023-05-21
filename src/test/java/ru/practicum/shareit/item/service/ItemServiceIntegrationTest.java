@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
@@ -14,6 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class ItemServiceIntegrationTest {
@@ -23,6 +25,7 @@ class ItemServiceIntegrationTest {
     UserDto createdOwner;
     UserDto createdUser;
     ItemDto createdItem;
+    ItemDto itemForUpdate;
     @Autowired
     private ItemService itemService;
     @Autowired
@@ -40,6 +43,11 @@ class ItemServiceIntegrationTest {
         item.setDescription("testItemDescription");
         item.setAvailable(true);
         createdItem = itemService.createItem(item, createdOwner.getId());
+
+        itemForUpdate = new ItemDto();
+        item.setName("updatedItemName");
+        item.setDescription("updTestItemDescription");
+        item.setAvailable(true);
 
         user = new UserDto();
         user.setName("testNameUser");
@@ -67,7 +75,7 @@ class ItemServiceIntegrationTest {
         List<ItemDto> itemDtoList = itemService.searchAvailableItem("test");
         assertNotNull(itemDtoList);
         assertEquals(1, itemDtoList.size());
-        assertEquals(item.getName(), itemDtoList.get(0).getName());
+        assertEquals(createdItem.getName(), itemDtoList.get(0).getName());
     }
 
     @Test
@@ -75,6 +83,18 @@ class ItemServiceIntegrationTest {
         List<ItemDto> itemDtoList = itemService.searchAvailableItem("blabla");
         assertNotNull(itemDtoList);
         assertEquals(0, itemDtoList.size());
+    }
+
+    @Test
+    void update_isValid() {
+        ItemDto actual = itemService.updateItem(createdItem.getId(), itemForUpdate, createdOwner.getId());
+        assertEquals(actual.getName(), createdItem.getName());
+        assertEquals(actual.getDescription(), createdItem.getDescription());
+    }
+
+    @Test
+    void update_ownerIsInvalid() {
+        assertThrows(NotFoundException.class, () -> itemService.updateItem(createdItem.getId(), createdItem, 999L));
     }
 
     @AfterEach
