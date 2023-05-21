@@ -32,13 +32,15 @@ public class ItemMapper {
         return item;
     }
 
-    public static ItemShortForRequestDto itemToItemShorForRequestDto(Item item) {
-        ItemShortForRequestDto itemDto = new ItemShortForRequestDto();
+    public static ItemForRequestDto itemToItemShortForRequestDto(Item item) {
+        ItemForRequestDto itemDto = new ItemForRequestDto();
         itemDto.setId(item.getId());
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
-        itemDto.setRequestId(item.getRequest().getId());
+        if (item.getRequest().getId() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
         return itemDto;
 
     }
@@ -47,7 +49,7 @@ public class ItemMapper {
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    public static List<ItemShortForRequestDto> itemlistToitemForRequestDtolist(List<Item> items) {
-        return items.stream().map(ItemMapper::itemToItemShorForRequestDto).collect(Collectors.toList());
+    public static List<ItemForRequestDto> itemlistToitemForRequestDtolist(List<Item> items) {
+        return items.stream().map(ItemMapper::itemToItemShortForRequestDto).collect(Collectors.toList());
     }
 }

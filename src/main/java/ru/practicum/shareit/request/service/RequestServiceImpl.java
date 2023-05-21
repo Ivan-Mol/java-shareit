@@ -72,7 +72,7 @@ public class RequestServiceImpl implements RequestService {
         for (RequestReturnDto request : requestReturnDtos) {
             for (Item item : itemsWithRequestsId) {
                 if (request.getId().equals(item.getRequest().getId())) {
-                    request.getItems().add(ItemMapper.itemToItemShorForRequestDto(item));
+                    request.getItems().add(ItemMapper.itemToItemShortForRequestDto(item));
                 }
             }
         }
