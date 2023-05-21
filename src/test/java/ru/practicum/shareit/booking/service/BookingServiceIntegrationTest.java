@@ -133,6 +133,32 @@ class BookingServiceIntegrationTest {
                 bookingService.getAllByBooker(999L, BookingStatus.WAITING.toString(), 0, 10));
     }
 
+    @Test
+    void approvingByOwner_isValidApprovedTrue() {
+        BookingResponseDto actual
+                = bookingService.approvingByOwner(createdBooking.getId(), createdOwner.getId(), true);
+        assertEquals(actual.getStatus(), BookingStatus.APPROVED);
+    }
+
+    @Test
+    void approvingByOwner_isValidApprovedFalse() {
+        BookingResponseDto actual
+                = bookingService.approvingByOwner(createdBooking.getId(), createdOwner.getId(), false);
+        assertEquals(actual.getStatus(), BookingStatus.REJECTED);
+    }
+
+    @Test
+    void approvingByOwner_isApprovedInvalid() {
+        assertThrows(ValidationException.class,
+                () -> bookingService.approvingByOwner(createdBooking.getId(), createdOwner.getId(), null));
+    }
+
+    @Test
+    void approvingByOwner_userIsNotOwner() {
+        assertThrows(NotFoundException.class,
+                () -> bookingService.approvingByOwner(createdBooking.getId(), createdBooker2.getId(), true));
+    }
+
     @AfterEach
     void afterEach() {
         bookingService.deleteById(createdBooking.getId());
