@@ -129,7 +129,7 @@ class ItemServiceIntegrationTest {
     }
 
     @Test
-    void CreateComment_isValid() {
+    void createComment_isValid() {
         CommentDto actual = itemService.createComment(createdItem.getId(), commentDto, createdUser.getId());
         assertEquals(actual.getCreated().toString(), commentDto.getCreated().toString());
         assertEquals(actual.getItemId(), createdItem.getId());
@@ -138,7 +138,7 @@ class ItemServiceIntegrationTest {
     }
 
     @Test
-    void CreateComment_isUserHasNoBookings() {
+    void createComment_isUserHasNoBookings() {
         assertThrows(ValidationException.class,
                 () -> itemService.createComment(createdItem.getId(), commentDto, createdOwner.getId()));
     }
