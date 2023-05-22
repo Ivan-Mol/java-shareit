@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-
     @Mock
     private UserRepository userRepository;
 
