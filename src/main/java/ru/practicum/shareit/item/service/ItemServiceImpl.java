@@ -29,7 +29,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -65,6 +65,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         User user = userRepository.getByIdAndCheck(ownerId);
         Item item = ItemMapper.toItem(itemDto, user);
@@ -76,6 +77,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
+    @Transactional
     @Override
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
         Item oldItem = itemRepository.getByIdAndCheck(itemId);
@@ -102,6 +104,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long itemId, Long userId) {
         User user = userRepository.getByIdAndCheck(userId);
         Item item = itemRepository.getByIdAndCheck(itemId);
@@ -137,6 +140,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto createComment(Long itemId, CommentDto commentDto, Long userId) {
         Item item = itemRepository.getByIdAndCheck(itemId);
         User user = userRepository.getByIdAndCheck(userId);

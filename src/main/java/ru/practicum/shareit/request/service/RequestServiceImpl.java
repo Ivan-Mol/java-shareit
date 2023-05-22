@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
@@ -38,6 +38,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public RequestReturnDto create(RequestDto requestDto, Long userId) {
         userRepository.getByIdAndCheck(userId);
         requestDto.setRequestorId(userId);
@@ -61,6 +62,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long requestId, Long userId) {
         userRepository.getByIdAndCheck(userId);
         requestRepository.deleteById(requestId);

@@ -20,13 +20,12 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
@@ -44,6 +43,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingResponseDto create(BookingDto bookingDto, Long userId) {
         User booker = userRepository.getByIdAndCheck(userId);
         Item item = itemRepository.getByIdAndCheck(bookingDto.getItemId());
@@ -60,11 +60,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         bookingRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public BookingResponseDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved) {
         Booking booking = bookingRepository.getByIdAndCheck(bookingId);
         User owner = userRepository.getByIdAndCheck(ownerId);
@@ -90,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponseDto> getAllByOwner(Long ownerId, String state, Integer from, Integer size) {
         userRepository.getByIdAndCheck(ownerId);
         LocalDateTime currentTime = LocalDateTime.now();
-        ArrayList<Booking> result = null;
+        List<Booking> result = null;
         PageRequest request = PageRequest.of(from, size);
         switch (state) {
             case "ALL":
@@ -121,7 +123,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponseDto> getAllByBooker(Long bookerId, String state, Integer from, Integer size) {
         userRepository.getByIdAndCheck(bookerId);
         LocalDateTime currentTime = LocalDateTime.now();
-        ArrayList<Booking> result = null;
+        List<Booking> result = null;
         PageRequest request = PageRequest.of(from / size, size);
         switch (state) {
             case "ALL":
