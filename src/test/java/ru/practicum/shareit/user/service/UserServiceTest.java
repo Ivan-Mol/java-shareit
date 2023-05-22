@@ -25,7 +25,7 @@ class UserServiceTest {
     private UserServiceImpl userService;
 
     @Test
-    void GetAll() {
+    void getAll() {
         User user = new User();
         user.setId(1L);
         user.setName("testUser");
