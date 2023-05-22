@@ -66,9 +66,9 @@ class UserServiceIntegrationTest {
         userDtoFromController.setName("updatedName");
         userDtoFromController.setEmail("updated@Email.com");
         userDtoFromController.setId(createdUserFromRepo.getId());
-
         UserDto actual = userService.update(userDtoFromController);
-        assertEquals(userDtoFromController, actual);
+        assertEquals("updatedName", actual.getName());
+        assertEquals("updated@Email.com", actual.getEmail());
 
     }
 

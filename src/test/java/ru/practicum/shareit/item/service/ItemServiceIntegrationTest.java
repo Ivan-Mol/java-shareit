@@ -38,6 +38,7 @@ class ItemServiceIntegrationTest {
     ItemDto itemForUpdate;
     CommentDto commentDto;
     Booking booking;
+    Booking booking2;
     @Autowired
     private ItemService itemService;
     @Autowired
@@ -79,6 +80,7 @@ class ItemServiceIntegrationTest {
         booking.setEndDate(LocalDateTime.now().minusDays(2));
         booking.setStatus(BookingStatus.APPROVED);
         booking = bookingRepository.save(booking);
+
         commentDto = new CommentDto();
         commentDto.setCreated(LocalDateTime.now());
         commentDto.setText("testText");
@@ -92,6 +94,12 @@ class ItemServiceIntegrationTest {
         ItemDto actual = itemService.getById(createdItem.getId(), createdUser.getId());
         assertNull(actual.getLastBooking());
         assertNull(actual.getNextBooking());
+    }
+
+    @Test
+    void getById_isOwner() {
+        ItemDto actual = itemService.getById(createdItem.getId(), createdOwner.getId());
+        assertEquals(actual.getLastBooking().getId(), booking.getId());
     }
 
     @Test

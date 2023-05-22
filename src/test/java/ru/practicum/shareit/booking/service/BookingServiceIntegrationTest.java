@@ -7,12 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.exception.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
@@ -28,15 +32,20 @@ class BookingServiceIntegrationTest {
     @Autowired
     BookingService bookingService;
     @Autowired
+    BookingRepository bookingRepository;
+    @Autowired
     UserService userService;
     @Autowired
     ItemService itemService;
 
-    BookingDto bookingFromController;
     BookingDto bookingWithUnavailableItem;
+    BookingDto bookingFromController;
     BookingDto bookingFromController2;
+    Booking bookingFromDb;
+    Booking bookingFromDb2;
     BookingResponseDto createdBooking;
     BookingResponseDto createdBooking2;
+    Booking createdBooking3;
     UserDto createdOwner;
     UserDto createdBooker2;
     UserDto createdBooker;
@@ -88,6 +97,22 @@ class BookingServiceIntegrationTest {
         bookingFromController2.setEnd(currentTime.plusMonths(2));
         createdBooking2 = bookingService.create(bookingFromController2, createdBooker2.getId());
 
+        bookingFromDb = new Booking();
+        bookingFromDb.setItem(ItemMapper.toItem(createdItem, UserMapper.toUser(createdOwner)));
+        bookingFromDb.setStatus(BookingStatus.APPROVED);
+        bookingFromDb.setStartDate(currentTime.minusDays(1));
+        bookingFromDb.setEndDate(currentTime.minusHours(2));
+        bookingFromDb.setBooker(UserMapper.toUser(createdBooker2));
+        bookingFromDb = bookingRepository.save(bookingFromDb);
+
+        bookingFromDb2 = new Booking();
+        bookingFromDb2.setItem(ItemMapper.toItem(createdItem, UserMapper.toUser(createdOwner)));
+        bookingFromDb2.setStatus(BookingStatus.REJECTED);
+        bookingFromDb2.setStartDate(currentTime.minusDays(1));
+        bookingFromDb2.setEndDate(currentTime.plusDays(2));
+        bookingFromDb2.setBooker(UserMapper.toUser(createdBooker2));
+        bookingFromDb2 = bookingRepository.save(bookingFromDb2);
+
         bookingWithUnavailableItem = new BookingDto();
         bookingWithUnavailableItem.setItemId(createdItem2.getId());
         bookingWithUnavailableItem.setStart(currentTime.plusDays(2));
@@ -115,6 +140,11 @@ class BookingServiceIntegrationTest {
     }
 
     @Test
+    void getById_UserISNotOwnerOrBooker() {
+        assertThrows(NotFoundException.class, () -> bookingService.getById(createdBooking.getId(), createdBooker2.getId()));
+    }
+
+    @Test
     void getAllByOwner() {
         List<BookingResponseDto> bookings = bookingService.getAllByOwner(createdOwner.getId(),
                 "WAITING", 0, 10);
@@ -122,6 +152,58 @@ class BookingServiceIntegrationTest {
         assertNotNull(bookings);
         assertEquals(2, bookings.size());
         assertEquals(bookingFromController.getStatus(), bookings.get(0).getStatus());
+    }
+
+    @Test
+    void getAllByOwner_All() {
+        List<BookingResponseDto> bookings = bookingService.getAllByOwner(createdOwner.getId(),
+                "ALL", 0, 10);
+
+        assertNotNull(bookings);
+        assertEquals(4, bookings.size());
+        assertEquals(createdBooking2.getId(), bookings.get(0).getId());
+        assertEquals(createdBooking.getId(), bookings.get(1).getId());
+    }
+
+    @Test
+    void getAllByOwner_Past() {
+        List<BookingResponseDto> bookings = bookingService.getAllByOwner(createdOwner.getId(),
+                "PAST", 0, 10);
+        assertNotNull(bookings);
+        assertEquals(1, bookings.size());
+        assertEquals(bookingFromDb.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void getAllByOwner_Current() {
+        List<BookingResponseDto> bookings = bookingService.getAllByOwner(createdOwner.getId(),
+                "CURRENT", 0, 10);
+        assertNotNull(bookings);
+        assertEquals(1, bookings.size());
+        assertEquals(bookingFromDb2.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void getAllByOwner_Future() {
+        List<BookingResponseDto> bookings = bookingService.getAllByOwner(createdOwner.getId(),
+                "FUTURE", 0, 10);
+        assertNotNull(bookings);
+        assertEquals(2, bookings.size());
+    }
+
+    @Test
+    void getAllByOwner_Rejected() {
+        List<BookingResponseDto> bookings = bookingService.getAllByOwner(createdOwner.getId(),
+                "REJECTED", 0, 10);
+        assertNotNull(bookings);
+        assertEquals(1, bookings.size());
+        assertEquals(bookingFromDb2.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void getAllByOwner_Unsupported() {
+        assertThrows(ValidationException.class, () -> bookingService.getAllByOwner(createdBooker.getId(),
+                "someState", 0, 10));
     }
 
     @Test
@@ -155,11 +237,40 @@ class BookingServiceIntegrationTest {
 
     @Test
     void getAllByBooker_past() {
-        List<BookingResponseDto> bookings = bookingService.getAllByBooker(createdBooker.getId(),
+        List<BookingResponseDto> bookings = bookingService.getAllByBooker(createdBooker2.getId(),
                 "PAST", 0, 10);
 
         assertNotNull(bookings);
-        assertEquals(0, bookings.size());
+        assertEquals(1, bookings.size());
+        assertEquals(bookingFromDb.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void getAllByBooker_Rejected() {
+        List<BookingResponseDto> bookings = bookingService.getAllByBooker(createdBooker2.getId(),
+                "REJECTED", 0, 10);
+        assertNotNull(bookings);
+        assertEquals(1, bookings.size());
+        assertEquals(bookingFromDb2.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void getAllByBooker_Current() {
+        List<BookingResponseDto> bookings = bookingService.getAllByBooker(createdBooker2.getId(),
+                "CURRENT", 0, 10);
+        assertNotNull(bookings);
+        assertEquals(1, bookings.size());
+        assertEquals(bookingFromDb2.getId(), bookings.get(0).getId());
+    }
+
+    @Test
+    void getAllByBooker_future() {
+        List<BookingResponseDto> bookings = bookingService.getAllByBooker(createdBooker.getId(),
+                "FUTURE", 0, 10);
+
+        assertNotNull(bookings);
+        assertEquals(1, bookings.size());
+        assertEquals(bookings.get(0).getId(), createdBooking.getId());
     }
 
     @Test
@@ -198,6 +309,8 @@ class BookingServiceIntegrationTest {
     void afterEach() {
         bookingService.deleteById(createdBooking.getId());
         bookingService.deleteById(createdBooking2.getId());
+        bookingService.deleteById(bookingFromDb.getId());
+        bookingService.deleteById(bookingFromDb2.getId());
         itemService.deleteById(createdItem.getId(), createdOwner.getId());
         itemService.deleteById(createdItem2.getId(), createdOwner.getId());
         userService.deleteById(createdOwner.getId());
