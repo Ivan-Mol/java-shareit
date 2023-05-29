@@ -10,11 +10,11 @@ public interface BookingService {
 
     BookingResponseDto create(BookingDto bookingDto, Long userId);
 
-    List<BookingResponseDto> getAllByBooker(Long bookerId, String state);
+    List<BookingResponseDto> getAllByBooker(Long bookerId, String state, Integer from, Integer size);
 
     BookingResponseDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved);
 
-    List<BookingResponseDto> getAllByOwner(Long ownerId, String state);
+    List<BookingResponseDto> getAllByOwner(Long ownerId, String state, Integer from, Integer size);
 
     void deleteById(Long id);
 }

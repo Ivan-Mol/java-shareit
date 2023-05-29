@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -19,13 +20,12 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
@@ -43,6 +43,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingResponseDto create(BookingDto bookingDto, Long userId) {
         User booker = userRepository.getByIdAndCheck(userId);
         Item item = itemRepository.getByIdAndCheck(bookingDto.getItemId());
@@ -59,11 +60,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         bookingRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public BookingResponseDto approvingByOwner(Long bookingId, Long ownerId, Boolean approved) {
         Booking booking = bookingRepository.getByIdAndCheck(bookingId);
         User owner = userRepository.getByIdAndCheck(ownerId);
@@ -86,28 +89,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getAllByOwner(Long ownerId, String state) {
+    public List<BookingResponseDto> getAllByOwner(Long ownerId, String state, Integer from, Integer size) {
         userRepository.getByIdAndCheck(ownerId);
         LocalDateTime currentTime = LocalDateTime.now();
-        ArrayList<Booking> result = null;
+        List<Booking> result = null;
+        PageRequest request = PageRequest.of(from, size);
         switch (state) {
             case "ALL":
-                result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId);
+                result = bookingRepository.getAllByItem_OwnerIdOrderByStartDateDesc(ownerId, request);
                 break;
             case "PAST":
-                result = bookingRepository.getAllByItem_OwnerIdAndEndDateIsBeforeOrderByStartDateDesc(ownerId, currentTime);
+                result = bookingRepository.getAllByItem_OwnerIdAndEndDateIsBeforeOrderByStartDateDesc(ownerId, currentTime, request);
                 break;
             case "CURRENT":
-                result = bookingRepository.getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(ownerId, currentTime, currentTime);
+                result = bookingRepository.getAllByItem_Owner_IdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(ownerId, currentTime, currentTime, request);
                 break;
             case "FUTURE":
-                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, currentTime);
+                result = bookingRepository.getAllByItem_OwnerIdAndStartDateIsAfterOrderByStartDateDesc(ownerId, currentTime, request);
                 break;
             case "WAITING":
-                result = bookingRepository.getAllByItem_OwnerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.WAITING);
+                result = bookingRepository.getAllByItem_OwnerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.WAITING, request);
                 break;
             case "REJECTED":
-                result = bookingRepository.getAllByItem_OwnerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.REJECTED);
+                result = bookingRepository.getAllByItem_OwnerIdAndStatusOrderByStartDateDesc(ownerId, BookingStatus.REJECTED, request);
                 break;
             default:
                 throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
@@ -116,28 +120,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getAllByBooker(Long bookerId, String state) {
+    public List<BookingResponseDto> getAllByBooker(Long bookerId, String state, Integer from, Integer size) {
         userRepository.getByIdAndCheck(bookerId);
         LocalDateTime currentTime = LocalDateTime.now();
-        ArrayList<Booking> result = null;
+        List<Booking> result = null;
+        PageRequest request = PageRequest.of(from / size, size);
         switch (state) {
             case "ALL":
-                result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId);
+                result = bookingRepository.getAllByBookerIdOrderByStartDateDesc(bookerId, request);
                 break;
             case "PAST":
-                result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, currentTime);
+                result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, currentTime, request);
                 break;
             case "CURRENT":
-                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, currentTime, currentTime);
+                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, currentTime, currentTime, request);
                 break;
             case "FUTURE":
-                result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, currentTime);
+                result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, currentTime, request);
                 break;
             case "WAITING":
-                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.WAITING);
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.WAITING, request);
                 break;
             case "REJECTED":
-                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.REJECTED);
+                result = bookingRepository.getAllByBookerIdAndStatusOrderByStartDateDesc(bookerId, BookingStatus.REJECTED, request);
                 break;
             default:
                 throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");

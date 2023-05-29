@@ -7,6 +7,6 @@ import ru.practicum.shareit.user.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     default User getByIdAndCheck(Long id) {
-        return findById(id).orElseThrow(() -> new NotFoundException("User with " + id + " Id is not found"));
+        return findById(id).orElseThrow(() -> new NotFoundException("User with id: " + id + " is not found"));
     }
 }

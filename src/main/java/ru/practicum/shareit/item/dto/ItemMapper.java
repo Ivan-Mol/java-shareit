@@ -15,8 +15,10 @@ public class ItemMapper {
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
-        itemDto.setRequest(item.getRequest());
         itemDto.setComments(new ArrayList<>());
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
         return itemDto;
     }
 
@@ -26,12 +28,28 @@ public class ItemMapper {
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
-        item.setRequest(itemDto.getRequest());
         item.setOwner(owner);
         return item;
     }
 
-    public static List<ItemDto> itemlistToitemdtolist(List<Item> items) {
+    public static ItemForRequestDto itemToItemShortForRequestDto(Item item) {
+        ItemForRequestDto itemDto = new ItemForRequestDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        if (item.getRequest().getId() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
+        return itemDto;
+
+    }
+
+    public static List<ItemDto> itemlistToitemDtolist(List<Item> items) {
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    }
+
+    public static List<ItemForRequestDto> itemlistToitemForRequestDtolist(List<Item> items) {
+        return items.stream().map(ItemMapper::itemToItemShortForRequestDto).collect(Collectors.toList());
     }
 }

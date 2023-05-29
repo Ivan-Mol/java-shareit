@@ -33,6 +33,17 @@ public class BookingMapper {
         return bookingResponseDto;
     }
 
+    public static BookingDto toBookingDto(Booking booking) {
+        BookingDto bookingDto = new BookingDto();
+        bookingDto.setId(booking.getId());
+        bookingDto.setStart(booking.getStartDate());
+        bookingDto.setEnd(booking.getEndDate());
+        bookingDto.setItemId(booking.getItem().getId());
+        bookingDto.setBookerId(booking.getBooker().getId());
+        bookingDto.setStatus(booking.getStatus());
+        return bookingDto;
+    }
+
     public static BookingResponseShortDto toBookingShortDto(Booking booking) {
         BookingResponseShortDto bookingResponseShortDto = new BookingResponseShortDto();
         if (booking != null) {
