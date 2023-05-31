@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.model;
 
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 @Getter
