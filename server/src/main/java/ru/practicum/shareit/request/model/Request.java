@@ -10,6 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import java.time.LocalDateTime;
@@ -24,9 +27,9 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description; //текст запроса, содержащий описание требуемой вещи;
+    private LocalDateTime created; //дата и время создания запроса;
     @NotNull
     @JoinColumn(name = "user_id")
     private Long requestorId; //пользователь, создавший запрос;
-    private LocalDateTime created; //дата и время создания запроса;
 
 }

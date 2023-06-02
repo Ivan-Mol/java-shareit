@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.dto;
 import lombok.Data;
 
 @Data
-public class ItemShortDto {
+public class UserShortDto {
     private final Long id;
-    private final String name;
 }
