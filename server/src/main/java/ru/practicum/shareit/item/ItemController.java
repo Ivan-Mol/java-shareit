@@ -34,9 +34,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        log.debug("received GET /items/");
-        return itemService.getAllByOwner(ownerId);
+    public List<ItemDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                 @RequestParam(name = "from") Integer from,
+                                                 @RequestParam(name = "size") Integer size) {
+        log.debug("received GET /items with HEADER {}", userId);
+        return itemService.getAllByOwner(userId, from, size);
     }
 
     @PostMapping

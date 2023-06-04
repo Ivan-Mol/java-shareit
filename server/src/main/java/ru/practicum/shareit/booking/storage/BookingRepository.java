@@ -43,7 +43,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     ArrayList<Booking> getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(Long bookerId, LocalDateTime currentDate, PageRequest of);
 
-    ArrayList<Booking> getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(Long bookerId, LocalDateTime currentTimeForStart, LocalDateTime currentTimeForEnd, PageRequest of);
+    ArrayList<Booking> getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateAsc(Long bookerId, LocalDateTime currentTimeForStart, LocalDateTime currentTimeForEnd, PageRequest of);
 
     ArrayList<Booking> getAllByBookerIdAndStatusOrderByStartDateDesc(Long bookerId, BookingStatus bookingStatus, PageRequest of);
 }

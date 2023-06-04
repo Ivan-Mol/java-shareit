@@ -46,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponseDto create(BookingDto bookingDto, Long userId) {
         User booker = userRepository.getByIdAndCheck(userId);
-        Item item = itemRepository.getByIdAndCheck(bookingDto.getItemId());
+        Item item = itemRepository.getItemByIdAndCheck(bookingDto.getItemId());
         if (booker.getId().equals(item.getOwner().getId())) {
             throw new NotFoundException("Booker is equals owner");
         }
@@ -133,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository.getAllByBookerIdAndEndDateIsBeforeOrderByStartDateDesc(bookerId, currentTime, request);
                 break;
             case "CURRENT":
-                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(bookerId, currentTime, currentTime, request);
+                result = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateAsc(bookerId, currentTime, currentTime, request);
                 break;
             case "FUTURE":
                 result = bookingRepository.getAllByBookerIdAndStartDateIsAfterOrderByStartDateDesc(bookerId, currentTime, request);

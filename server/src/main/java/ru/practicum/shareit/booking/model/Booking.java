@@ -7,6 +7,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,6 +34,7 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User booker; //пользователь, который осуществляет бронирование;
+    @Enumerated(EnumType.STRING)
     private BookingStatus status; //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование подтверждено владельцем,
     // REJECTED — бронирование отклонено владельцем, CANCELED — бронирование отменено создателем.
 }

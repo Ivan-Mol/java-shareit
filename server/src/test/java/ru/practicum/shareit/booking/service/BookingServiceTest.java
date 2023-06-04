@@ -73,7 +73,7 @@ class BookingServiceTest {
         booking.setStartDate(LocalDateTime.now().plusHours(1));
         booking.setEndDate(LocalDateTime.now().plusDays(1));
 
-        when(itemRepository.getByIdAndCheck(any())).thenReturn(item);
+        when(itemRepository.getItemByIdAndCheck(any())).thenReturn(item);
         when(userRepository.getByIdAndCheck(any())).thenReturn(booker);
         when(bookingRepository.save(any())).thenReturn(booking);
 
@@ -84,7 +84,7 @@ class BookingServiceTest {
         assertEquals(bookingDtoForReturn.getStart(), booking.getStartDate());
         assertEquals(bookingDtoForReturn.getEnd(), booking.getEndDate());
 
-        verify(itemRepository).getByIdAndCheck(any());
+        verify(itemRepository).getItemByIdAndCheck(any());
         verify(userRepository).getByIdAndCheck(any());
         verify(bookingRepository).save(any());
     }
@@ -111,11 +111,11 @@ class BookingServiceTest {
         booking.setStartDate(LocalDateTime.now().plusHours(1));
         booking.setEndDate(LocalDateTime.now().plusDays(1));
 
-        when(itemRepository.getByIdAndCheck(any())).thenReturn(item);
+        when(itemRepository.getItemByIdAndCheck(any())).thenReturn(item);
         when(userRepository.getByIdAndCheck(any())).thenReturn(booker);
 
         assertThrows(NotFoundException.class, () -> bookingService.create(BookingMapper.toBookingDto(booking), booker.getId()));
-        verify(itemRepository).getByIdAndCheck(any());
+        verify(itemRepository).getItemByIdAndCheck(any());
         verify(userRepository).getByIdAndCheck(any());
     }
 
@@ -145,12 +145,12 @@ class BookingServiceTest {
         booking.setStartDate(LocalDateTime.now().plusHours(1));
         booking.setEndDate(LocalDateTime.now().plusDays(1));
 
-        when(itemRepository.getByIdAndCheck(any())).thenReturn(item);
+        when(itemRepository.getItemByIdAndCheck(any())).thenReturn(item);
         when(userRepository.getByIdAndCheck(any())).thenReturn(booker);
 
 
         assertThrows(ValidationException.class, () -> bookingService.create(BookingMapper.toBookingDto(booking), booker.getId()));
-        verify(itemRepository).getByIdAndCheck(any());
+        verify(itemRepository).getItemByIdAndCheck(any());
         verify(userRepository).getByIdAndCheck(any());
     }
 

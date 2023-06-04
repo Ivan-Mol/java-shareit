@@ -49,11 +49,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                                 @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
                                                 @RequestParam(name = "size", defaultValue = "20") @Min(1) @Max(100) Integer size) {
-        log.debug("received GET /items with HEADER {}", userId);
-        return client.getAllByOwner(userId, from, size);
+        log.debug("received GET /items with HEADER {}", ownerId);
+        return client.getAllByOwner(ownerId, from, size);
     }
 
     @GetMapping("/search")

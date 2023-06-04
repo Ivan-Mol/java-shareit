@@ -225,7 +225,7 @@ class BookingRepositoryTest {
 
     @Test
     void getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc() {
-        List<Booking> bookingList = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateDesc(createdUser1.getId(), LocalDateTime.now(), LocalDateTime.now(), PageRequest.of(0, 10));
+        List<Booking> bookingList = bookingRepository.getAllByBookerIdAndStartDateIsBeforeAndEndDateIsAfterOrderByStartDateAsc(createdUser1.getId(), LocalDateTime.now(), LocalDateTime.now(), PageRequest.of(0, 10));
         assertEquals(1, bookingList.size());
         assertTrue(bookingList.contains(createdBooking4));
     }

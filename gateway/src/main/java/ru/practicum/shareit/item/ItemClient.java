@@ -33,12 +33,12 @@ public class ItemClient extends BaseClient {
         return patch("/" + itemId, userId, itemDto);
     }
 
-    public ResponseEntity<Object> getAllByOwner(Long userId, Integer from, Integer size) {
+    public ResponseEntity<Object> getAllByOwner(Long ownerId, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
         );
-        return get("?from={from}&size={size}", userId, parameters);
+        return get("?from={from}&size={size}", ownerId, parameters);
     }
 
     public ResponseEntity<Object> getItemById(Long userId, Long id) {

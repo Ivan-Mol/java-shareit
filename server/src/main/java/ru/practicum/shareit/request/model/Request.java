@@ -29,7 +29,7 @@ public class Request {
     private String description; //текст запроса, содержащий описание требуемой вещи;
     private LocalDateTime created; //дата и время создания запроса;
     @NotNull
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "requestor_id")
     private Long requestorId; //пользователь, создавший запрос;
 
 }

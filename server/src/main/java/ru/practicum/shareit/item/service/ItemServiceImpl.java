@@ -21,6 +21,7 @@ import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.request.storage.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,8 +40,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getById(Long id, Long userId) {
-        Item item = itemRepository.getByIdAndCheck(id);
-        ItemDto itemDto = ItemMapper.toItemDto(itemRepository.getByIdAndCheck(id));
+        Item item = itemRepository.getItemByIdAndCheck(id);
+        ItemDto itemDto = ItemMapper.toItemDto(itemRepository.getItemByIdAndCheck(id));
         itemDto.setComments(commentRepository.getAllByItemId(id));
         if (item.getOwner().getId().equals(userId)) {
             LocalDateTime currentTime = LocalDateTime.now();
@@ -51,9 +52,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllByOwner(Long ownerId) {
+    public List<ItemDto> getAllByOwner(Long ownerId,Integer from, Integer size) {
         User owner = userRepository.getByIdAndCheck(ownerId);
-        List<Item> items = itemRepository.getByOwnerId(owner.getId());
+        List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(owner.getId(), PageRequest.of(from / size, size));
         return getItemsDtoWithLastAndNextBookings(items);
     }
 
@@ -80,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
-        Item oldItem = itemRepository.getByIdAndCheck(itemId);
+        Item oldItem = itemRepository.getItemByIdAndCheck(itemId);
         User owner = userRepository.getByIdAndCheck(ownerId);
         Item item = ItemMapper.toItem(itemDto, owner);
         if (item.getOwner() == null) {
@@ -107,7 +108,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public void deleteById(Long itemId, Long userId) {
         User user = userRepository.getByIdAndCheck(userId);
-        Item item = itemRepository.getByIdAndCheck(itemId);
+        Item item = itemRepository.getItemByIdAndCheck(itemId);
         if (user.equals(item.getOwner())) {
             itemRepository.deleteById(itemId);
         } else {
@@ -142,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public CommentDto createComment(Long itemId, CommentDto commentDto, Long userId) {
-        Item item = itemRepository.getByIdAndCheck(itemId);
+        Item item = itemRepository.getItemByIdAndCheck(itemId);
         User user = userRepository.getByIdAndCheck(userId);
         LocalDateTime timeOfCreation = LocalDateTime.now();
         commentDto.setCreated(timeOfCreation);
