@@ -19,6 +19,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -78,7 +80,7 @@ class ItemControllerTest {
         item.setId(1L);
         item.setName("itemNameTest");
         item.setDescription("DescriptionTest");
-        when(itemServiceMock.getAllByOwner(any())).thenReturn(List.of(item));
+        when(itemServiceMock.getAllByOwner(anyLong(), anyInt(), anyInt())).thenReturn(List.of(item));
 
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", "1")

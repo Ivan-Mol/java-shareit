@@ -104,7 +104,7 @@ class ItemServiceIntegrationTest {
 
     @Test
     void getAllByOwner() {
-        List<ItemDto> list = itemService.getAllByOwner(createdOwner.getId());
+        List<ItemDto> list = itemService.getAllByOwner(createdOwner.getId(), 0, 20);
         assertNotNull(list);
         assertEquals(1, list.size());
     }

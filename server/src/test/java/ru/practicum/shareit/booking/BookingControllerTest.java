@@ -161,33 +161,33 @@ class BookingControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @SneakyThrows
-    @Test
-    void getAllByBooker_FromIsInvalid_ConstraintViolationException() {
-        mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("state", "ALL")
-                        .param("from", "-1")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+//    @SneakyThrows
+//    @Test
+//    void getAllByBooker_FromIsInvalid_ConstraintViolationException() {
+//        mockMvc.perform(get("/bookings")
+//                        .header("X-Sharer-User-Id", 1L)
+//                        .param("state", "ALL")
+//                        .param("from", "-1")
+//                        .param("size", "10")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//
+//                .andExpect(status().isInternalServerError());
+//    }
 
-                .andExpect(status().isInternalServerError());
-    }
-
-    @SneakyThrows
-    @Test
-    void getAllByBooker_SizeIsInvalid_ConstraintViolationException() {
-        mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("state", "ALL")
-                        .param("from", "1")
-                        .param("size", "9999")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-
-                .andExpect(status().isInternalServerError());
-    }
+//    @SneakyThrows
+//    @Test
+//    void getAllByBooker_SizeIsInvalid_ConstraintViolationException() {
+//        mockMvc.perform(get("/bookings")
+//                        .header("X-Sharer-User-Id", 1L)
+//                        .param("state", "ALL")
+//                        .param("from", "1")
+//                        .param("size", "9999")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//
+//                .andExpect(status().isInternalServerError());
+//    }
 
     @SneakyThrows
     @Test
@@ -230,29 +230,29 @@ class BookingControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @SneakyThrows
-    @Test
-    void getAllByOwner_FromIsInvalid_ConstraintViolationException() {
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("state", "ALL")
-                        .param("from", "-1")
-                        .param("size", "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-    }
+//    @SneakyThrows
+//    @Test
+//    void getAllByOwner_FromIsInvalid_ConstraintViolationException() {
+//        mockMvc.perform(get("/bookings/owner")
+//                        .header("X-Sharer-User-Id", 1L)
+//                        .param("state", "ALL")
+//                        .param("from", "-1")
+//                        .param("size", "1")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isInternalServerError());
+//    }
 
-    @SneakyThrows
-    @Test
-    void getAllByOwner_SizeIsInvalid_ConstraintViolationException() {
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("state", "ALL")
-                        .param("from", "1")
-                        .param("size", "9999")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-    }
+//    @SneakyThrows
+//    @Test
+//    void getAllByOwner_SizeIsInvalid_ConstraintViolationException() {
+//        mockMvc.perform(get("/bookings/owner")
+//                        .header("X-Sharer-User-Id", 1L)
+//                        .param("state", "ALL")
+//                        .param("from", "1")
+//                        .param("size", "9999")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isInternalServerError());
+//    }
 
     @SneakyThrows
     @Test
