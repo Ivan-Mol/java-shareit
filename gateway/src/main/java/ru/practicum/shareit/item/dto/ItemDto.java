@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ItemDto {
     private Long id;
-    @NotBlank(message = "description is null or empty")
+    @NotBlank(message = "name is null or empty")
     private String name;
     @NotBlank(message = "description is null or empty")
     private String description;

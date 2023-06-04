@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -21,7 +22,6 @@ import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.request.storage.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllByOwner(Long ownerId,Integer from, Integer size) {
+    public List<ItemDto> getAllByOwner(Long ownerId, Integer from, Integer size) {
         User owner = userRepository.getByIdAndCheck(ownerId);
         List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(owner.getId(), PageRequest.of(from / size, size));
         return getItemsDtoWithLastAndNextBookings(items);

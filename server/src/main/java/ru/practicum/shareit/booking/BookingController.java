@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,18 +16,12 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @Slf4j
 @RequiredArgsConstructor
-@Validated
 public class BookingController {
     private final BookingService bookingService;
 
@@ -41,7 +34,7 @@ public class BookingController {
 
     @PostMapping
     public BookingResponseDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                     @RequestBody @Valid BookingDto bookingDto) {
+                                     @RequestBody BookingDto bookingDto) {
         log.debug("received POST /booking by user Id/{}", userId);
         return bookingService.create(bookingDto, userId);
     }
@@ -56,18 +49,18 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDto> getAllByBooker(@RequestHeader("X-Sharer-User-Id") long bookerId,
-                                                   @RequestParam(name = "state", defaultValue = "ALL") String state,
-                                                   @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
-                                                   @RequestParam(name = "size", defaultValue = "20") @Positive @Max(100) Integer size) {
+                                                   @RequestParam String state,
+                                                   @RequestParam Integer from,
+                                                   @RequestParam Integer size) {
         log.debug("received GET /AllByBooker with Id/{}", bookerId);
         return bookingService.getAllByBooker(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId,
-                                                  @RequestParam(name = "state", defaultValue = "ALL") String state,
-                                                  @RequestParam(name = "from", defaultValue = "0") @Min(0) Integer from,
-                                                  @RequestParam(name = "size", defaultValue = "20") @Min(1) @Max(100) Integer size) {
+                                                  @RequestParam String state,
+                                                  @RequestParam Integer from,
+                                                  @RequestParam Integer size) {
         log.debug("received GET /AllByOwner with Id/{}", ownerId);
         return bookingService.getAllByOwner(ownerId, state, from, size);
     }

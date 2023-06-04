@@ -16,7 +16,6 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -35,15 +34,15 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @RequestParam(name = "from") Integer from,
-                                                 @RequestParam(name = "size") Integer size) {
+                                       @RequestParam(name = "from") Integer from,
+                                       @RequestParam(name = "size") Integer size) {
         log.debug("received GET /items with HEADER {}", userId);
         return itemService.getAllByOwner(userId, from, size);
     }
 
     @PostMapping
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                          @RequestBody @Valid ItemDto itemDto) {
+                          @RequestBody ItemDto itemDto) {
         log.debug("received POST /items with body {}", itemDto);
         return itemService.createItem(itemDto, ownerId);
     }
@@ -72,7 +71,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@PathVariable Long itemId,
                                     @RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @RequestBody @Valid CommentDto commentDto) {
+                                    @RequestBody CommentDto commentDto) {
         log.debug("received POST /comment with body {}", commentDto);
         return itemService.createComment(itemId, commentDto, userId);
     }

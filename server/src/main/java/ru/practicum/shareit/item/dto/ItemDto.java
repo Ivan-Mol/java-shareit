@@ -6,19 +6,14 @@ import ru.practicum.shareit.booking.dto.BookingResponseShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Comment;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
 public class ItemDto {
     private long id;
-    @NotBlank(message = "description is null or empty")
     private String name;
-    @NotBlank(message = "description is null or empty")
     private String description;
-    @NotNull(message = "available is null")
     private Boolean available;
     private Long requestId;
     private BookingResponseShortDto lastBooking;

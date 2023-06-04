@@ -17,7 +17,7 @@ public class BookingDto {
     private Long itemId;
     private Long bookerId;
     @Enumerated(EnumType.ORDINAL)
-    private BookingState status;
+    private BookingStatus status;
     //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование подтверждено владельцем,
     // REJECTED — бронирование отклонено владельцем, CANCELED — бронирование отменено создателем.
 }
