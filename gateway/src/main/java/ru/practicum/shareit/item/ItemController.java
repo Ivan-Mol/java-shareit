@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.Create;
-import ru.practicum.shareit.user.dto.Update;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;

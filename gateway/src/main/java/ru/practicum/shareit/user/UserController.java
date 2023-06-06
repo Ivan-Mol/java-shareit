@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import ru.practicum.shareit.user.dto.Create;
-import ru.practicum.shareit.user.dto.Update;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
