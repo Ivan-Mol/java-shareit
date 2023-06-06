@@ -49,7 +49,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleAll(ConstraintViolationException e) {
         return new ErrorResponse(e.getMessage());
     }

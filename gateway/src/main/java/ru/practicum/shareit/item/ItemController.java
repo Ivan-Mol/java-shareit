@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.Create;
+import ru.practicum.shareit.user.dto.Update;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -35,12 +37,14 @@ public class ItemController {
     }
 
     @PostMapping
+    @Validated(Create.class)
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody @Valid ItemDto itemDto) {
         log.debug("received POST /items/ with HEADER {} and BODY {}", userId, itemDto);
         return client.create(itemDto, userId);
     }
 
     @PatchMapping("/{id}")
+    @Validated(Update.class)
     public ResponseEntity<Object> update(@RequestHeader("X-Sharer-User-Id") Long userId,
                                          @RequestBody ItemDto itemDto,
                                          @PathVariable("id") Long id) {

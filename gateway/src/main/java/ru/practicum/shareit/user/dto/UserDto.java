@@ -7,9 +7,10 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class UserDto {
+    @NotNull(groups = Update.class)
     private Long id;
     private String name;
-    @NotNull(message = "Email is null")
-    @Email(message = "Email Is Invalid")
+    @NotNull(message = "Email is null", groups = Create.class)
+    @Email(message = "Email Is Invalid", groups = {Update.class, Create.class})
     private String email;
 }

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import ru.practicum.shareit.user.dto.Create;
+import ru.practicum.shareit.user.dto.Update;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
@@ -36,6 +38,7 @@ public class UserController {
     }
 
     @ResponseBody
+    @Validated(Create.class)
     @PostMapping
     public ResponseEntity<Object> create(@Valid @RequestBody UserDto userDto) {
         log.info("Получен POST-запрос к эндпоинту: '/users' на добавление пользователя");
@@ -43,6 +46,7 @@ public class UserController {
     }
 
     @ResponseBody
+    @Validated(Update.class)
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> update(@RequestBody UserDto userDto, @PathVariable Long userId) {
         log.info("Получен PATCH-запрос к эндпоинту: '/users' на обновление пользователя с ID={}", userId);

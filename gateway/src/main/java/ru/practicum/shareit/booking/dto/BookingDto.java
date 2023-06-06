@@ -2,8 +2,6 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Data;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -16,7 +14,6 @@ public class BookingDto {
     private LocalDateTime end; //дата и время конца бронирования;
     private Long itemId;
     private Long bookerId;
-    @Enumerated(EnumType.ORDINAL)
     private BookingStatus status;
     //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование подтверждено владельцем,
     // REJECTED — бронирование отклонено владельцем, CANCELED — бронирование отменено создателем.
